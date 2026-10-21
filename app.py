@@ -33,26 +33,47 @@ def add_no_cache_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
 
-# Global variable for the model
+# Global variables for models
 model = None
+tflite_interpreter = None
 MODEL_PATH = os.path.join(BASE_DIR, "local_mango_model.keras")
+TFLITE_PATH = os.path.join(BASE_DIR, "mango_model.tflite")
 # Exact classes provided from the training dataset
 CLASS_NAMES = ['Anthracnose', 'Die Black', 'Gall Midge', 'Healthy', 'Powdery Mildew']
 
-def load_keras_model():
-    global model
-    if not HAS_TF or tf is None:
-        print("TensorFlow not installed in current environment; using mathematical planimetry & colorimetric diagnostic engine.")
-        return
-    try:
-        if os.path.exists(MODEL_PATH):
+def load_inference_models():
+    global model, tflite_interpreter
+    # 1. Load lightweight TFLite model (8.8MB - works on Vercel with ai-edge-litert)
+    if os.path.exists(TFLITE_PATH):
+        try:
+            from ai_edge_litert.interpreter import Interpreter
+            tflite_interpreter = Interpreter(model_path=TFLITE_PATH)
+            tflite_interpreter.allocate_tensors()
+            print("LiteRT TFLite MobileNetV2 model loaded successfully.")
+        except Exception as e:
+            try:
+                from tflite_runtime.interpreter import Interpreter
+                tflite_interpreter = Interpreter(model_path=TFLITE_PATH)
+                tflite_interpreter.allocate_tensors()
+                print("tflite_runtime MobileNetV2 model loaded successfully.")
+            except Exception as e2:
+                if HAS_TF and tf is not None:
+                    try:
+                        tflite_interpreter = tf.lite.Interpreter(model_path=TFLITE_PATH)
+                        tflite_interpreter.allocate_tensors()
+                        print("TF Lite Interpreter loaded successfully.")
+                    except Exception as e3:
+                        print(f"Failed to load TFLite: {e3}")
+    
+    # 2. Load Keras model if TensorFlow is available locally
+    if HAS_TF and tf is not None and os.path.exists(MODEL_PATH):
+        try:
             model = tf.keras.models.load_model(MODEL_PATH)
-            print("Model loaded successfully.")
-    except Exception as e:
-        print(f"Failed to load model: {e}")
-        print("Continuing with mathematical planimetry & colorimetric diagnostic engine.")
+            print("TensorFlow Keras MobileNetV2 model loaded successfully.")
+        except Exception as e:
+            print(f"Failed to load Keras model: {e}")
 
-load_keras_model()
+load_inference_models()
 
 def compute_opencv_disease_scores(img_bgr, bbox=None, polygon=None):
     """
@@ -708,6 +729,18 @@ def predict():
                 except Exception as e:
                     print(f"Model prediction error: {e}")
                     confidence_scores = None
+            elif tflite_interpreter is not None:
+                try:
+                    inp = tflite_interpreter.get_input_details()[0]
+                    out = tflite_interpreter.get_output_details()[0]
+                    tflite_interpreter.set_tensor(inp['index'], img_array)
+                    tflite_interpreter.invoke()
+                    preds = tflite_interpreter.get_tensor(out['index'])[0]
+                    confidence_scores = preds.tolist()
+                    inference_engine = "MobileNetV2 Neural Network (LiteRT Edge Engine)"
+                except Exception as e:
+                    print(f"TFLite prediction error: {e}")
+                    confidence_scores = None
 
             # Fallback to authentic Computer-Vision Colorimetric & Morphological Classifier
             if confidence_scores is None:
@@ -762,7 +795,7 @@ def predict():
                 "allPredictions": all_predictions,
                 "bbox": bbox,
                 "polygon": polygon,
-                "modelLoaded": model is not None,
+                "modelLoaded": (model is not None or tflite_interpreter is not None),
                 "inferenceEngine": inference_engine,
                 
                 # New Quantitative Phytopathology & Decision-Support Modules

@@ -1229,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (engineBadge) {
             if (data.inferenceEngine) {
                 engineBadge.textContent = data.inferenceEngine;
-                engineBadge.className = data.inferenceEngine.includes("TensorFlow") ? "badge badge-success font-11" : "badge badge-warning font-11";
+                engineBadge.className = (data.inferenceEngine.includes("TensorFlow") || data.inferenceEngine.includes("LiteRT") || data.inferenceEngine.includes("MobileNetV2")) ? "badge badge-success font-11" : "badge badge-warning font-11";
             } else {
                 engineBadge.textContent = "MobileNetV2 Deep Learning";
                 engineBadge.className = "badge badge-success font-11";
