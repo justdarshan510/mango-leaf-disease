@@ -539,10 +539,18 @@ def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=No
     }
 
 @app.route('/')
+@app.route('/index.html')
+@app.route('/api')
+@app.route('/api/index')
+@app.route('/api/index.py')
 def index():
+    for d in [STATIC_DIR, os.path.join(BASE_DIR, 'public'), 'public', 'static']:
+        if os.path.exists(os.path.join(d, 'index.html')):
+            return send_from_directory(d, 'index.html')
     return send_from_directory('static', 'index.html')
 
 @app.route('/api/weather', methods=['GET'])
+@app.route('/weather', methods=['GET'])
 def get_live_weather():
     lat = request.args.get('lat', default='11.66', type=str)
     lon = request.args.get('lon', default='78.14', type=str)
@@ -572,6 +580,7 @@ def get_live_weather():
         })
 
 @app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400

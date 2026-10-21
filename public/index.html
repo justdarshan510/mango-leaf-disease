@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mango Health Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <i class="ph-fill ph-leaf"></i>
+                </div>
+                <div class="brand-text">
+                    <h2>MangoHealth</h2>
+                    <p>AI Diagnostics</p>
+                </div>
+                <button class="mobile-close" id="mobile-close">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="view-dashboard">
+                    <i class="ph ph-squares-four"></i> <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-target="view-detect">
+                    <i class="ph ph-scan"></i> <span>Detect Disease</span>
+                </a>
+                <a href="#" class="nav-item" data-target="view-history">
+                    <i class="ph ph-clock-counter-clockwise"></i> <span>Prediction History</span>
+                </a>
+                <a href="#" class="nav-item" data-target="view-analytics">
+                    <i class="ph ph-chart-line-up"></i> <span>Disease Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-target="view-performance">
+                    <i class="ph ph-cpu"></i> <span>Model Performance</span>
+                </a>
+                <a href="#" class="nav-item" data-target="view-library">
+                    <i class="ph ph-book-open-text"></i> <span>Disease Information</span>
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <a href="#" class="nav-item">
+                    <i class="ph ph-gear"></i> <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-dot"></div>
+                    <div class="status-info">
+                        <span class="status-model">EfficientNet-B0</span>
+                        <span class="status-version">v1.0 (Active)</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu" id="mobile-menu">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <h1 class="page-title" id="page-title">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <span class="current-date" id="current-date">--</span>
+                    <button class="icon-btn"><i class="ph ph-bell"></i></button>
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=10b981&color=fff" alt="Profile">
+                    </div>
+                </div>
+            </header>
+            
+            <div class="view-container">
+            
+                <!-- ==============================================
+                     1. MAIN DASHBOARD VIEW
+                     ============================================== -->
+                <section id="view-dashboard" class="view-section active">
+                    <div class="view-header">
+                        <h2>Mango Health Dashboard</h2>
+                        <p class="subtitle">AI-powered mango leaf disease monitoring and analysis</p>
+                    </div>
+                    
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="ph ph-scan"></i></div>
+                            <div class="kpi-data">
+                                <span class="kpi-value">1,432</span>
+                                <span class="kpi-label">Total Predictions</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon healthy"><i class="ph ph-plant"></i></div>
+                            <div class="kpi-data">
+                                <span class="kpi-value">645</span>
+                                <span class="kpi-label">Healthy Plants</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon danger"><i class="ph ph-bug"></i></div>
+                            <div class="kpi-data">
+                                <span class="kpi-value">787</span>
+                                <span class="kpi-label">Diseases Detected</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon warning"><i class="ph ph-warning-circle"></i></div>
+                            <div class="kpi-data">
+                                <span class="kpi-value text-sm">Powdery Mildew</span>
+                                <span class="kpi-label">Most Detected</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="card recent-predictions-card">
+                            <div class="card-header">
+                                <h3>Recent Predictions</h3>
+                                <span class="badge badge-demo">Demo Data</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Leaf</th>
+                                            <th>Prediction</th>
+                                            <th>Confidence</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-recent-tbody">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Disease Distribution</h3>
+                                <span class="badge badge-demo">Demo Data</span>
+                            </div>
+                            <div class="chart-container" style="position: relative; height:250px;">
+                                <canvas id="dash-donut-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ==============================================
+                     2. DETECT DISEASE VIEW
+                     ============================================== -->
+                <section id="view-detect" class="view-section">
+                    <div class="view-header">
+                        <div>
+                            <h2>Quantitative Phytopathology & Disease Detection</h2>
+                            <p class="subtitle">Pixel-level lesion planimetry, Horsfall-Barratt severity grading, XAI grounding & microclimate dosage advisory.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detection-layout">
+                        <!-- Left: Upload & Vision Canvas -->
+                        <div class="upload-panel">
+                            <!-- Pre-Scan Context Bar (Orchard & Microclimate Telemetry) -->
+                            <div class="card prescan-context-bar" id="prescan-context-bar">
+                                <div class="prescan-header">
+                                    <div class="prescan-title">
+                                        <i class="ph-fill ph-sliders-horizontal text-primary"></i>
+                                        <span>Pre-Scan Context & Telemetry</span>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-xs" id="btn-sync-weather" title="Sync live local weather from Open-Meteo API">
+                                        <i class="ph ph-cloud-sun"></i> <span>Sync Live Weather</span>
+                                    </button>
+                                </div>
+                                <div class="prescan-grid">
+                                    <div class="prescan-field">
+                                        <label for="input-plot-id"><i class="ph ph-map-pin"></i> Plot / Tree ID</label>
+                                        <input type="text" id="input-plot-id" value="TREE-01" placeholder="e.g. TREE-01, ORCHARD-NORTH" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-tree-count"><i class="ph ph-tree"></i> Trees to Treat</label>
+                                        <input type="number" id="input-tree-count" value="10" min="1" max="1000" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-temp"><i class="ph ph-thermometer"></i> Temp (°C)</label>
+                                        <input type="number" id="input-temp" value="29.0" step="0.5" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-humidity"><i class="ph ph-drop"></i> Humidity (%)</label>
+                                        <input type="number" id="input-humidity" value="82" min="10" max="100" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-wind"><i class="ph ph-wind"></i> Wind (km/h)</label>
+                                        <input type="number" id="input-wind" value="11.0" step="0.5" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-rain"><i class="ph ph-cloud-rain"></i> Rain Prob (%)</label>
+                                        <input type="number" id="input-rain" value="15" min="0" max="100" class="fc-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3-Mode Interactive Vision Canvas Switcher -->
+                            <div class="canvas-tab-switcher hidden" id="canvas-tab-switcher">
+                                <button type="button" class="canvas-tab-btn active" data-mode="original" id="tab-btn-original" title="Original leaf image with SVG bounding box & polygon contour">
+                                    <i class="ph ph-bounding-box"></i> <span>1. Leaf Contour (OpenCV)</span>
+                                </button>
+                                <button type="button" class="canvas-tab-btn" data-mode="lesion" id="tab-btn-lesion" title="Displays severityMetrics.lesionMaskBase64 isolating necrotic spots">
+                                    <i class="ph ph-paint-brush"></i> <span>2. Lesion Planimetry Mask (PLAA)</span>
+                                </button>
+                                <button type="button" class="canvas-tab-btn" data-mode="gradcam" id="tab-btn-gradcam" title="Displays explainability.gradCamBase64 attention heatmap">
+                                    <i class="ph ph-fire"></i> <span>3. Grad-CAM AI Attention (XAI)</span>
+                                </button>
+                            </div>
+
+                            <div class="upload-dropzone" id="upload-dropzone">
+                                <input type="file" id="file-input" accept="image/jpeg, image/png, image/jpg" hidden>
+                                
+                                <div class="upload-state-idle" id="upload-idle">
+                                    <div class="upload-icon"><i class="ph ph-upload-simple"></i></div>
+                                    <h3>Drag & Drop Mango Leaf Image</h3>
+                                    <p>or <span class="text-primary">browse files</span></p>
+                                    <span class="upload-hint">Formats: JPG, JPEG, PNG (Max 5MB) • Single leaf in frame</span>
+                                </div>
+                                
+                                <div class="upload-state-preview hidden" id="upload-preview">
+                                    <div style="position: relative; display: inline-block; width:100%; height:100%;" id="preview-image-container">
+                                        <img id="preview-image" src="" alt="Uploaded Leaf">
+                                        <div id="bbox-overlay" class="bbox-overlay hidden">
+                                            <span class="bbox-label">Detected Leaf</span>
+                                        </div>
+                                        <svg id="polygon-overlay" class="hidden" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 11;">
+                                            <polygon id="leaf-polygon" points="" style="fill:rgba(16, 185, 129, 0.15);stroke:#10B981;stroke-width:2.5;stroke-dasharray:none;" />
+                                        </svg>
+                                    </div>
+                                    <div class="preview-actions">
+                                        <button class="btn btn-secondary" id="btn-replace"><i class="ph ph-arrows-clockwise"></i> Replace</button>
+                                        <button class="btn btn-danger-outline" id="btn-remove"><i class="ph ph-trash"></i> Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-large btn-block" id="btn-analyze" disabled>
+                                <i class="ph ph-scan"></i> Run Quantitative Phytopathology Analysis
+                            </button>
+                        </div>
+                        
+                        <!-- Right: Quantitative Diagnostics & Prescription Area -->
+                        <div class="results-panel">
+                            <!-- Empty State -->
+                            <div class="results-empty" id="results-empty">
+                                <i class="ph ph-scan"></i>
+                                <h3>Awaiting Mango Leaf Image</h3>
+                                <p>Upload an orchard leaf photo to trigger lesion planimetry, Horsfall-Barratt severity rating, and precision spray prescription.</p>
+                            </div>
+                            
+                            <!-- Loading State -->
+                            <div class="results-loading hidden" id="results-loading">
+                                <div class="spinner"></div>
+                                <h3>Executing Multi-Stage Phytopathology Engine...</h3>
+                                <p>Segmenting lamina • Calculating PLAA % • Generating Grad-CAM • Formulating dosage...</p>
+                            </div>
+                            
+                            <!-- Success State -->
+                            <div class="results-content hidden" id="results-content">
+                                
+                                <!-- Low Confidence Warning -->
+                                <div class="alert alert-warning hidden" id="low-confidence-warning">
+                                    <i class="ph-fill ph-warning"></i>
+                                    <div class="alert-content">
+                                        <h4>Diagnostic Ambiguity Detected</h4>
+                                        <p>Inference confidence is below 60%. Please verify lighting and upload a closer shot of the affected leaf surface to rule out false positives.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Longitudinal Plot Efficacy Tracker (ΔPLAA) -->
+                                <div class="plot-delta-banner hidden" id="plot-delta-banner">
+                                    <div class="pdb-left">
+                                        <div class="pdb-icon" id="pdb-icon"><i class="ph-bold ph-chart-line-up"></i></div>
+                                        <div class="pdb-info">
+                                            <div class="pdb-title-row">
+                                                <span class="pdb-label">LONGITUDINAL PLOT TRACKER</span>
+                                                <span class="pdb-plot" id="pdb-plot-id">PLOT: TREE-01</span>
+                                            </div>
+                                            <h4 class="pdb-headline" id="pdb-headline">Baseline Assessment Logged</h4>
+                                            <p class="pdb-subtext" id="pdb-subtext">Initial scan recorded for this plot canopy. Subsequent scans will compute quantitative treatment delta (ΔPLAA).</p>
+                                        </div>
+                                    </div>
+                                    <div class="pdb-badge-wrap">
+                                        <span class="treatment-efficacy-badge baseline" id="treatment-efficacy-badge">Baseline Active</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Main Diagnostic & Severity Card -->
+                                <div class="prediction-main-card" id="prediction-main-card">
+                                    <div class="pred-top-row">
+                                        <div>
+                                            <span class="prediction-label">DIAGNOSED PATHOLOGY</span>
+                                            <h2 class="prediction-title" id="prediction-title">--</h2>
+                                        </div>
+                                        <span class="severity-badge-main" id="severity-badge-main">Grade --</span>
+                                    </div>
+                                    
+                                    <div class="pred-stats-row">
+                                        <div class="confidence-ring-container">
+                                            <div class="confidence-text">
+                                                <span class="conf-value" id="prediction-conf-val">--</span>
+                                                <span class="conf-symbol">%</span>
+                                            </div>
+                                            <p class="conf-label">Model Confidence</p>
+                                        </div>
+
+                                        <div class="plaa-stat-container">
+                                            <div class="plaa-text">
+                                                <span class="plaa-val" id="plaa-pct-val">--</span>
+                                                <span class="plaa-symbol">%</span>
+                                            </div>
+                                            <p class="plaa-label">Necrotic Surface Ratio (PLAA)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 1. Quantitative Planimetry & Severity Breakdown Card -->
+                                <div class="card quant-card">
+                                    <div class="card-header">
+                                        <div class="d-flex align-center gap-8">
+                                            <i class="ph-fill ph-ruler text-primary font-20"></i>
+                                            <h3>0–5 Horsfall-Barratt Severity Meter</h3>
+                                        </div>
+                                        <span class="badge badge-info" id="badge-severity-label">Calculating...</span>
+                                    </div>
+
+                                    <!-- Visual 0-5 Stepped Meter -->
+                                    <div class="hb-stepped-meter" id="hb-stepped-meter">
+                                        <div class="hb-step" data-grade="0" id="hb-step-0">
+                                            <span class="hb-step-num">0</span>
+                                            <span class="hb-step-title">Healthy</span>
+                                            <span class="hb-step-range">0%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="1" id="hb-step-1">
+                                            <span class="hb-step-num">1</span>
+                                            <span class="hb-step-title">Trace</span>
+                                            <span class="hb-step-range">&le;5%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="2" id="hb-step-2">
+                                            <span class="hb-step-num">2</span>
+                                            <span class="hb-step-title">Mild</span>
+                                            <span class="hb-step-range">&le;15%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="3" id="hb-step-3">
+                                            <span class="hb-step-num">3</span>
+                                            <span class="hb-step-title">Moderate</span>
+                                            <span class="hb-step-range">&le;30%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="4" id="hb-step-4">
+                                            <span class="hb-step-num">4</span>
+                                            <span class="hb-step-title">Severe</span>
+                                            <span class="hb-step-range">&le;50%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="5" id="hb-step-5">
+                                            <span class="hb-step-num">5</span>
+                                            <span class="hb-step-title">Critical</span>
+                                            <span class="hb-step-range">>50%</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="plaa-meter-wrap">
+                                        <div class="plaa-meter-track">
+                                            <div class="plaa-meter-fill" id="plaa-meter-fill" style="width: 0%;"></div>
+                                        </div>
+                                        <div class="plaa-scale-labels">
+                                            <span>0% (Grade 0)</span>
+                                            <span>5% (Grade 1)</span>
+                                            <span>15% (Grade 2)</span>
+                                            <span>30% (Grade 3)</span>
+                                            <span>50% (Grade 4)</span>
+                                            <span>100% (Grade 5)</span>
+                                        </div>
+                                    </div>
+                                    <div class="pixel-metrics-grid">
+                                        <div class="pm-box">
+                                            <span class="pm-title">Pathological Lesion Area</span>
+                                            <span class="pm-number text-danger" id="metric-lesion-pixels">-- px</span>
+                                        </div>
+                                        <div class="pm-box">
+                                            <span class="pm-title">Total Leaf Lamina Area</span>
+                                            <span class="pm-number text-success" id="metric-leaf-pixels">-- px</span>
+                                        </div>
+                                        <div class="pm-box">
+                                            <span class="pm-title">Colorimetric Pipeline</span>
+                                            <span class="pm-number" style="font-size:13px; font-weight:600;">CIE-LAB + HSV</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Explainable AI & Spatial Grounding Card -->
+                                <div class="card quant-card">
+                                    <div class="card-header">
+                                        <div class="d-flex align-center gap-8">
+                                            <i class="ph-fill ph-cpu text-info font-20"></i>
+                                            <h3>Explainable AI & Spatial Grounding</h3>
+                                        </div>
+                                        <span class="grounding-badge verified" id="grounding-badge">
+                                            <i class="ph-fill ph-check-circle"></i> Grounding Verified
+                                        </span>
+                                    </div>
+                                    <div class="grounding-grid">
+                                        <div class="grounding-score-box">
+                                            <span class="g-score-num" id="spatial-containment-val">--%</span>
+                                            <span class="g-score-lbl">Within Lamina Boundary</span>
+                                        </div>
+                                        <div class="grounding-details">
+                                            <p class="g-note" id="grounding-note-text">Quantifying attention concentration inside the segmented contour...</p>
+                                            <p class="g-expl">Spatial containment confirms the network evaluates biological foliar lesions rather than background orchard soil, sky, or imaging artifacts.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Micro-Climatic Spore Risk & Spray Window Card -->
+                                <div class="card quant-card">
+                                    <div class="card-header">
+                                        <div class="d-flex align-center gap-8">
+                                            <i class="ph-fill ph-drop text-warning font-20"></i>
+                                            <h3>Microclimate Spore Proliferation & Spray Window</h3>
+                                        </div>
+                                        <span class="badge" id="spore-risk-badge">Risk: --</span>
+                                    </div>
+                                    <div class="spore-progress-wrap">
+                                        <div class="spore-progress-bar">
+                                            <div class="spore-progress-fill" id="spore-risk-fill" style="width: 0%;"></div>
+                                        </div>
+                                        <div class="spore-scale-labels">
+                                            <span>0 (Low)</span>
+                                            <span>35 (Moderate)</span>
+                                            <span>65 (High)</span>
+                                            <span>100 (Critical)</span>
+                                        </div>
+                                    </div>
+                                    <div class="spray-window-banner" id="spray-window-banner">
+                                        <i class="ph-fill ph-check-circle" id="spray-window-icon"></i>
+                                        <div class="spray-window-text">
+                                            <strong id="spray-window-status">Evaluating Spray Safety Window...</strong>
+                                            <p id="spray-window-reason">Checking wind velocity and rain wash-off risks...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 4. Severity-Weighted Precision Dosage Prescription Card -->
+                                <div class="card quant-card dosage-prescription-card">
+                                    <div class="card-header">
+                                        <div class="d-flex align-center gap-8">
+                                            <i class="ph-fill ph-first-aid text-success font-20"></i>
+                                            <h3>Severity-Calibrated Dosage Prescription</h3>
+                                        </div>
+                                        <span class="badge badge-success" id="dosage-treatment-type">Prescription</span>
+                                    </div>
+                                    <div class="dosage-hero">
+                                        <div class="dh-agent">
+                                            <span class="dh-label">PRESCRIBED ACTIVE AGENT</span>
+                                            <h4 id="dosage-agent-name">--</h4>
+                                        </div>
+                                        <div class="dh-concentration">
+                                            <span class="dh-label">APPLICATION RATE</span>
+                                            <span class="dh-val" id="dosage-per-liter">--</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tank-mix-box">
+                                        <div class="tm-item">
+                                            <span class="tm-lbl">Canopy Target</span>
+                                            <strong id="dosage-tree-count">10 Trees</strong>
+                                        </div>
+                                        <div class="tm-sep">×</div>
+                                        <div class="tm-item">
+                                            <span class="tm-lbl">Canopy Volume</span>
+                                            <strong>15 L / Tree</strong>
+                                        </div>
+                                        <div class="tm-sep">=</div>
+                                        <div class="tm-item highlight">
+                                            <span class="tm-lbl">Total Water Batch</span>
+                                            <strong id="dosage-water-volume">150 Liters</strong>
+                                        </div>
+                                        <div class="tm-sep">+</div>
+                                        <div class="tm-item chemical-highlight">
+                                            <span class="tm-lbl">Required Chemical</span>
+                                            <strong id="dosage-chem-amount">300 g</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="protocol-box">
+                                        <span class="protocol-lbl"><i class="ph ph-shield-check"></i> Agronomical Field Protocol:</span>
+                                        <p id="dosage-action-protocol">--</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Multi-Class Confidence Spectrum -->
+                                <div class="card predictions-list-card">
+                                    <h3>Multi-Class Confidence Spectrum</h3>
+                                    <div class="probabilities-list" id="probabilities-list">
+                                        <!-- JS injected -->
+                                    </div>
+                                </div>
+
+                                <!-- Action Toolbar -->
+                                <div class="action-toolbar">
+                                    <button type="button" class="btn btn-primary btn-large btn-block" id="btn-print-certificate">
+                                        <i class="ph-fill ph-file-pdf"></i> Generate Clinical Phytopathology Certificate (Print / PDF)
+                                    </button>
+                                </div>
+                                
+                                <div class="card disease-info-card hidden" id="disease-info-quick">
+                                    <!-- Injected via JS based on prediction -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ==============================================
+                     3. PREDICTION HISTORY VIEW
+                     ============================================== -->
+                <section id="view-history" class="view-section">
+                    <div class="view-header">
+                        <h2>Prediction History</h2>
+                        <p class="subtitle">Complete log of all past analyses.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="filter-bar">
+                                <div class="search-box">
+                                    <i class="ph ph-magnifying-glass"></i>
+                                    <input type="text" placeholder="Search predictions...">
+                                </div>
+                                <select class="filter-select">
+                                    <option>All Diseases</option>
+                                    <option>Healthy</option>
+                                    <option>Anthracnose</option>
+                                    <option>Die Black</option>
+                                    <option>Gall Midge</option>
+                                    <option>Powdery Mildew</option>
+                                </select>
+                            </div>
+                            <span class="badge badge-demo">Demo Data</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Plot / Tree ID</th>
+                                        <th>Image</th>
+                                        <th>Diagnosed Pathology</th>
+                                        <th>PLAA %</th>
+                                        <th>ΔPLAA Efficacy</th>
+                                        <th>Confidence</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-tbody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ==============================================
+                     4. DISEASE ANALYTICS VIEW
+                     ============================================== -->
+                <section id="view-analytics" class="view-section">
+                    <div class="view-header">
+                        <h2>Disease Analytics</h2>
+                        <p class="subtitle">Insights and trends across all predictions.</p>
+                        <div class="header-filters">
+                            <button class="btn btn-secondary active">7 Days</button>
+                            <button class="btn btn-secondary">30 Days</button>
+                            <button class="btn btn-secondary">All Time</button>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mb-24">
+                        <i class="ph-fill ph-info"></i>
+                        <p>This page displays high-quality demonstration data to illustrate analytics capabilities. Connect a database to track live application data.</p>
+                    </div>
+                    
+                    <div class="analytics-grid">
+                        <div class="card chart-card">
+                            <h3>Predictions Over Time</h3>
+                            <div class="chart-container" style="position: relative; height:300px;">
+                                <canvas id="chart-timeline"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card chart-card">
+                            <h3>Disease Distribution</h3>
+                            <div class="chart-container" style="position: relative; height:300px;">
+                                <canvas id="chart-distribution"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card chart-card">
+                            <h3>Healthy vs Diseased</h3>
+                            <div class="chart-container" style="position: relative; height:300px;">
+                                <canvas id="chart-healthy"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card chart-card">
+                            <h3>Average Confidence by Disease</h3>
+                            <div class="chart-container" style="position: relative; height:300px;">
+                                <canvas id="chart-confidence"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ==============================================
+                     5. MODEL PERFORMANCE VIEW
+                     ============================================== -->
+                <section id="view-performance" class="view-section">
+                    <div class="view-header">
+                        <h2>Model Performance</h2>
+                        <p class="subtitle">Transparent evaluation metrics across internal and independent datasets.</p>
+                    </div>
+                    
+                    <!-- System Overview -->
+                    <div class="system-overview-card mb-32">
+                        <div class="sys-item">
+                            <span class="sys-label">Architecture</span>
+                            <span class="sys-val">EfficientNet-B0</span>
+                        </div>
+                        <div class="sys-item">
+                            <span class="sys-label">Classes</span>
+                            <span class="sys-val">5</span>
+                        </div>
+                        <div class="sys-item">
+                            <span class="sys-label">Training Size</span>
+                            <span class="sys-val">910 images</span>
+                        </div>
+                        <div class="sys-item">
+                            <span class="sys-label">Input Shape</span>
+                            <span class="sys-val">224 × 224 × 3</span>
+                        </div>
+                        <div class="sys-item">
+                            <span class="sys-label">Device</span>
+                            <span class="sys-val">CPU Inference</span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mb-32">
+                        <i class="ph-fill ph-warning-circle"></i>
+                        <div class="alert-content">
+                            <h4>Model Transparency Notice</h4>
+                            <p>Performance on independent external images can differ significantly from internal dataset performance. Image conditions, backgrounds, cameras, and disease appearance variations heavily impact real-world accuracy.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-grid">
+                        
+                        <!-- Internal Dataset -->
+                        <div class="card performance-card internal-card">
+                            <div class="perf-header">
+                                <h3>Internal Evaluation</h3>
+                                <span class="badge badge-success">Training Distribution</span>
+                            </div>
+                            <p class="perf-desc">Evaluation on held-out images from the same source as the training set.</p>
+                            
+                            <div class="perf-big-metric">
+                                <span class="perf-num text-success">100%</span>
+                                <span class="perf-label">Test Accuracy</span>
+                            </div>
+                            
+                            <div class="metrics-list">
+                                <div class="m-row"><span>Validation Accuracy</span> <strong>100%</strong></div>
+                                <div class="m-row"><span>Balanced Accuracy</span> <strong>100%</strong></div>
+                                <div class="m-row"><span>Internal Test Images</span> <strong>200</strong></div>
+                            </div>
+                        </div>
+                        
+                        <!-- External Dataset -->
+                        <div class="card performance-card external-card">
+                            <div class="perf-header">
+                                <h3>Independent External Evaluation</h3>
+                                <span class="badge badge-warning">Cross-Dataset</span>
+                            </div>
+                            <p class="perf-desc">Evaluation on completely independent images to measure real-world generalization.</p>
+                            
+                            <div class="perf-big-metric">
+                                <span class="perf-num text-warning">73%</span>
+                                <span class="perf-label">External Accuracy</span>
+                            </div>
+                            
+                            <div class="metrics-list">
+                                <div class="m-row"><span>External Balanced Acc.</span> <strong>73%</strong></div>
+                                <div class="m-row"><span>External Test Images</span> <strong>2,500</strong></div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="content-grid-2 mt-32">
+                        <!-- Confusion Matrix -->
+                        <div class="card">
+                            <h3>Confusion Matrix (Internal)</h3>
+                            <p class="card-subtitle mb-16">Normalized predictions across the 5 classes.</p>
+                            <div class="cm-container">
+                                <div class="cm-grid">
+                                    <!-- Corner -->
+                                    <div class="cm-cell empty"></div>
+                                    <!-- X Headers -->
+                                    <div class="cm-cell header" title="Anthracnose">ANT</div>
+                                    <div class="cm-cell header" title="Die Black">DIE</div>
+                                    <div class="cm-cell header" title="Gall Midge">GAL</div>
+                                    <div class="cm-cell header" title="Healthy">HEA</div>
+                                    <div class="cm-cell header" title="Powdery Mildew">POW</div>
+                                    
+                                    <!-- Row 1 -->
+                                    <div class="cm-cell header-y" title="Anthracnose">ANT</div>
+                                    <div class="cm-cell val high" title="True: Anthracnose, Pred: Anthracnose">1.0</div>
+                                    <div class="cm-cell val" title="True: Anthracnose, Pred: Die Black">0.0</div>
+                                    <div class="cm-cell val" title="True: Anthracnose, Pred: Gall Midge">0.0</div>
+                                    <div class="cm-cell val" title="True: Anthracnose, Pred: Healthy">0.0</div>
+                                    <div class="cm-cell val" title="True: Anthracnose, Pred: Powdery Mildew">0.0</div>
+                                    
+                                    <!-- Row 2 -->
+                                    <div class="cm-cell header-y" title="Die Black">DIE</div>
+                                    <div class="cm-cell val" title="True: Die Black, Pred: Anthracnose">0.0</div>
+                                    <div class="cm-cell val high" title="True: Die Black, Pred: Die Black">1.0</div>
+                                    <div class="cm-cell val" title="True: Die Black, Pred: Gall Midge">0.0</div>
+                                    <div class="cm-cell val" title="True: Die Black, Pred: Healthy">0.0</div>
+                                    <div class="cm-cell val" title="True: Die Black, Pred: Powdery Mildew">0.0</div>
+                                    
+                                    <!-- Row 3 -->
+                                    <div class="cm-cell header-y" title="Gall Midge">GAL</div>
+                                    <div class="cm-cell val" title="True: Gall Midge, Pred: Anthracnose">0.0</div>
+                                    <div class="cm-cell val" title="True: Gall Midge, Pred: Die Black">0.0</div>
+                                    <div class="cm-cell val high" title="True: Gall Midge, Pred: Gall Midge">1.0</div>
+                                    <div class="cm-cell val" title="True: Gall Midge, Pred: Healthy">0.0</div>
+                                    <div class="cm-cell val" title="True: Gall Midge, Pred: Powdery Mildew">0.0</div>
+                                    
+                                    <!-- Row 4 -->
+                                    <div class="cm-cell header-y" title="Healthy">HEA</div>
+                                    <div class="cm-cell val" title="True: Healthy, Pred: Anthracnose">0.0</div>
+                                    <div class="cm-cell val" title="True: Healthy, Pred: Die Black">0.0</div>
+                                    <div class="cm-cell val" title="True: Healthy, Pred: Gall Midge">0.0</div>
+                                    <div class="cm-cell val high" title="True: Healthy, Pred: Healthy">1.0</div>
+                                    <div class="cm-cell val" title="True: Healthy, Pred: Powdery Mildew">0.0</div>
+                                    
+                                    <!-- Row 5 -->
+                                    <div class="cm-cell header-y" title="Powdery Mildew">POW</div>
+                                    <div class="cm-cell val" title="True: Powdery Mildew, Pred: Anthracnose">0.0</div>
+                                    <div class="cm-cell val" title="True: Powdery Mildew, Pred: Die Black">0.0</div>
+                                    <div class="cm-cell val" title="True: Powdery Mildew, Pred: Gall Midge">0.0</div>
+                                    <div class="cm-cell val" title="True: Powdery Mildew, Pred: Healthy">0.0</div>
+                                    <div class="cm-cell val high" title="True: Powdery Mildew, Pred: Powdery Mildew">1.0</div>
+                                </div>
+                                <div class="cm-axes">
+                                    <div class="y-axis-label">True Label</div>
+                                    <div class="x-axis-label">Predicted Label</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Classification Metrics -->
+                        <div class="card">
+                            <h3>Classification Metrics (Internal)</h3>
+                            <p class="card-subtitle mb-16">Detailed per-class evaluation.</p>
+                            <div class="table-responsive">
+                                <table class="table metrics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Disease</th>
+                                            <th>Precision</th>
+                                            <th>Recall</th>
+                                            <th>F1 Score</th>
+                                            <th>Support</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Anthracnose</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>40</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Die Black</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>40</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Gall Midge</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>40</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Healthy</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>40</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Powdery Mildew</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>1.00</td>
+                                            <td>40</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ==============================================
+                     6. DISEASE LIBRARY VIEW
+                     ============================================== -->
+                <section id="view-library" class="view-section">
+                    <div class="view-header">
+                        <h2>Disease Information Library</h2>
+                        <p class="subtitle">Reference guide for mango leaf diseases and healthy characteristics.</p>
+                    </div>
+                    
+                    <div class="library-grid" id="library-grid">
+                        <!-- Populated via JS -->
+                    </div>
+                </section>
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Prediction Details -->
+    <div class="modal-overlay hidden" id="prediction-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close"><i class="ph ph-x"></i></button>
+            <div class="modal-body" id="modal-body">
+                <!-- JS injected content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Printable Clinical Phytopathology Certificate -->
+    <div class="modal-overlay hidden" id="certificate-modal">
+        <div class="modal-content certificate-modal-content">
+            <button class="modal-close" id="certificate-modal-close"><i class="ph ph-x"></i></button>
+            <div class="certificate-body" id="certificate-body">
+                <!-- Injected via JS -->
+            </div>
+            <div class="certificate-modal-actions no-print">
+                <button class="btn btn-secondary" id="btn-close-cert"><i class="ph ph-x"></i> Close</button>
+                <button class="btn btn-primary" id="btn-do-print"><i class="ph ph-printer"></i> Print / Save Certificate PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
