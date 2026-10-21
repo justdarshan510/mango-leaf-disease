@@ -183,16 +183,55 @@
                     <div class="detection-layout">
                         <!-- Left: Upload & Vision Canvas -->
                         <div class="upload-panel">
-                            <!-- Canvas Mode Switcher (Active upon prediction) -->
+                            <!-- Pre-Scan Context Bar (Orchard & Microclimate Telemetry) -->
+                            <div class="card prescan-context-bar" id="prescan-context-bar">
+                                <div class="prescan-header">
+                                    <div class="prescan-title">
+                                        <i class="ph-fill ph-sliders-horizontal text-primary"></i>
+                                        <span>Pre-Scan Context & Telemetry</span>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-xs" id="btn-sync-weather" title="Sync live local weather from Open-Meteo API">
+                                        <i class="ph ph-cloud-sun"></i> <span>Sync Live Weather</span>
+                                    </button>
+                                </div>
+                                <div class="prescan-grid">
+                                    <div class="prescan-field">
+                                        <label for="input-plot-id"><i class="ph ph-map-pin"></i> Plot / Tree ID</label>
+                                        <input type="text" id="input-plot-id" value="TREE-01" placeholder="e.g. TREE-01, ORCHARD-NORTH" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-tree-count"><i class="ph ph-tree"></i> Trees to Treat</label>
+                                        <input type="number" id="input-tree-count" value="10" min="1" max="1000" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-temp"><i class="ph ph-thermometer"></i> Temp (°C)</label>
+                                        <input type="number" id="input-temp" value="29.0" step="0.5" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-humidity"><i class="ph ph-drop"></i> Humidity (%)</label>
+                                        <input type="number" id="input-humidity" value="82" min="10" max="100" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-wind"><i class="ph ph-wind"></i> Wind (km/h)</label>
+                                        <input type="number" id="input-wind" value="11.0" step="0.5" class="fc-input">
+                                    </div>
+                                    <div class="prescan-field">
+                                        <label for="input-rain"><i class="ph ph-cloud-rain"></i> Rain Prob (%)</label>
+                                        <input type="number" id="input-rain" value="15" min="0" max="100" class="fc-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3-Mode Interactive Vision Canvas Switcher -->
                             <div class="canvas-tab-switcher hidden" id="canvas-tab-switcher">
-                                <button type="button" class="canvas-tab-btn active" data-mode="original" id="tab-btn-original">
-                                    <i class="ph ph-bounding-box"></i> <span>ROI Leaf Lamina</span>
+                                <button type="button" class="canvas-tab-btn active" data-mode="original" id="tab-btn-original" title="Original leaf image with SVG bounding box & polygon contour">
+                                    <i class="ph ph-bounding-box"></i> <span>1. Leaf Contour (OpenCV)</span>
                                 </button>
-                                <button type="button" class="canvas-tab-btn" data-mode="lesion" id="tab-btn-lesion">
-                                    <i class="ph ph-paint-brush"></i> <span>Lesion Planimetry</span>
+                                <button type="button" class="canvas-tab-btn" data-mode="lesion" id="tab-btn-lesion" title="Displays severityMetrics.lesionMaskBase64 isolating necrotic spots">
+                                    <i class="ph ph-paint-brush"></i> <span>2. Lesion Planimetry Mask (PLAA)</span>
                                 </button>
-                                <button type="button" class="canvas-tab-btn" data-mode="gradcam" id="tab-btn-gradcam">
-                                    <i class="ph ph-fire"></i> <span>Grad-CAM XAI</span>
+                                <button type="button" class="canvas-tab-btn" data-mode="gradcam" id="tab-btn-gradcam" title="Displays explainability.gradCamBase64 attention heatmap">
+                                    <i class="ph ph-fire"></i> <span>3. Grad-CAM AI Attention (XAI)</span>
                                 </button>
                             </div>
 
@@ -219,45 +258,6 @@
                                     <div class="preview-actions">
                                         <button class="btn btn-secondary" id="btn-replace"><i class="ph ph-arrows-clockwise"></i> Replace</button>
                                         <button class="btn btn-danger-outline" id="btn-remove"><i class="ph ph-trash"></i> Remove</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Orchard Telemetry & Microclimate Configuration -->
-                            <div class="card field-config-card" id="field-config-card">
-                                <div class="field-config-header">
-                                    <div class="fc-title">
-                                        <i class="ph-fill ph-cloud-sun"></i>
-                                        <span>Orchard Microclimate & Tank Setup</span>
-                                    </div>
-                                    <button type="button" class="btn btn-secondary btn-xs" id="btn-sync-weather" title="Fetch live local weather from Open-Meteo">
-                                        <i class="ph ph-arrows-clockwise"></i> Sync Live Weather
-                                    </button>
-                                </div>
-                                <div class="field-config-grid">
-                                    <div class="fc-item">
-                                        <label for="input-plot-id">Plot Identifier</label>
-                                        <input type="text" id="input-plot-id" value="ORCHARD-B3" class="fc-input">
-                                    </div>
-                                    <div class="fc-item">
-                                        <label for="input-tree-count">Canopy Trees Count</label>
-                                        <input type="number" id="input-tree-count" value="10" min="1" max="1000" class="fc-input">
-                                    </div>
-                                    <div class="fc-item">
-                                        <label for="input-temp">Ambient Temp (°C)</label>
-                                        <input type="number" id="input-temp" value="29.0" step="0.5" class="fc-input">
-                                    </div>
-                                    <div class="fc-item">
-                                        <label for="input-humidity">Rel. Humidity (%)</label>
-                                        <input type="number" id="input-humidity" value="82" min="10" max="100" class="fc-input">
-                                    </div>
-                                    <div class="fc-item">
-                                        <label for="input-wind">Wind Speed (km/h)</label>
-                                        <input type="number" id="input-wind" value="11.0" step="0.5" class="fc-input">
-                                    </div>
-                                    <div class="fc-item">
-                                        <label for="input-rain">Rain Probability (%)</label>
-                                        <input type="number" id="input-rain" value="15" min="0" max="100" class="fc-input">
                                     </div>
                                 </div>
                             </div>
@@ -294,6 +294,24 @@
                                         <p>Inference confidence is below 60%. Please verify lighting and upload a closer shot of the affected leaf surface to rule out false positives.</p>
                                     </div>
                                 </div>
+
+                                <!-- Longitudinal Plot Efficacy Tracker (ΔPLAA) -->
+                                <div class="plot-delta-banner hidden" id="plot-delta-banner">
+                                    <div class="pdb-left">
+                                        <div class="pdb-icon" id="pdb-icon"><i class="ph-bold ph-chart-line-up"></i></div>
+                                        <div class="pdb-info">
+                                            <div class="pdb-title-row">
+                                                <span class="pdb-label">LONGITUDINAL PLOT TRACKER</span>
+                                                <span class="pdb-plot" id="pdb-plot-id">PLOT: TREE-01</span>
+                                            </div>
+                                            <h4 class="pdb-headline" id="pdb-headline">Baseline Assessment Logged</h4>
+                                            <p class="pdb-subtext" id="pdb-subtext">Initial scan recorded for this plot canopy. Subsequent scans will compute quantitative treatment delta (ΔPLAA).</p>
+                                        </div>
+                                    </div>
+                                    <div class="pdb-badge-wrap">
+                                        <span class="treatment-efficacy-badge baseline" id="treatment-efficacy-badge">Baseline Active</span>
+                                    </div>
+                                </div>
                                 
                                 <!-- Main Diagnostic & Severity Card -->
                                 <div class="prediction-main-card" id="prediction-main-card">
@@ -319,7 +337,7 @@
                                                 <span class="plaa-val" id="plaa-pct-val">--</span>
                                                 <span class="plaa-symbol">%</span>
                                             </div>
-                                            <p class="plaa-label">Leaf Area Affected (PLAA)</p>
+                                            <p class="plaa-label">Necrotic Surface Ratio (PLAA)</p>
                                         </div>
                                     </div>
                                 </div>
@@ -329,21 +347,56 @@
                                     <div class="card-header">
                                         <div class="d-flex align-center gap-8">
                                             <i class="ph-fill ph-ruler text-primary font-20"></i>
-                                            <h3>Horsfall-Barratt Severity Planimetry</h3>
+                                            <h3>0–5 Horsfall-Barratt Severity Meter</h3>
                                         </div>
                                         <span class="badge badge-info" id="badge-severity-label">Calculating...</span>
                                     </div>
+
+                                    <!-- Visual 0-5 Stepped Meter -->
+                                    <div class="hb-stepped-meter" id="hb-stepped-meter">
+                                        <div class="hb-step" data-grade="0" id="hb-step-0">
+                                            <span class="hb-step-num">0</span>
+                                            <span class="hb-step-title">Healthy</span>
+                                            <span class="hb-step-range">0%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="1" id="hb-step-1">
+                                            <span class="hb-step-num">1</span>
+                                            <span class="hb-step-title">Trace</span>
+                                            <span class="hb-step-range">&le;5%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="2" id="hb-step-2">
+                                            <span class="hb-step-num">2</span>
+                                            <span class="hb-step-title">Mild</span>
+                                            <span class="hb-step-range">&le;15%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="3" id="hb-step-3">
+                                            <span class="hb-step-num">3</span>
+                                            <span class="hb-step-title">Moderate</span>
+                                            <span class="hb-step-range">&le;30%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="4" id="hb-step-4">
+                                            <span class="hb-step-num">4</span>
+                                            <span class="hb-step-title">Severe</span>
+                                            <span class="hb-step-range">&le;50%</span>
+                                        </div>
+                                        <div class="hb-step" data-grade="5" id="hb-step-5">
+                                            <span class="hb-step-num">5</span>
+                                            <span class="hb-step-title">Critical</span>
+                                            <span class="hb-step-range">>50%</span>
+                                        </div>
+                                    </div>
+
                                     <div class="plaa-meter-wrap">
                                         <div class="plaa-meter-track">
                                             <div class="plaa-meter-fill" id="plaa-meter-fill" style="width: 0%;"></div>
                                         </div>
                                         <div class="plaa-scale-labels">
-                                            <span>0% (H)</span>
-                                            <span>5% (G1)</span>
-                                            <span>15% (G2)</span>
-                                            <span>30% (G3)</span>
-                                            <span>50% (G4)</span>
-                                            <span>>50% (G5)</span>
+                                            <span>0% (Grade 0)</span>
+                                            <span>5% (Grade 1)</span>
+                                            <span>15% (Grade 2)</span>
+                                            <span>30% (Grade 3)</span>
+                                            <span>50% (Grade 4)</span>
+                                            <span>100% (Grade 5)</span>
                                         </div>
                                     </div>
                                     <div class="pixel-metrics-grid">
@@ -356,7 +409,7 @@
                                             <span class="pm-number text-success" id="metric-leaf-pixels">-- px</span>
                                         </div>
                                         <div class="pm-box">
-                                            <span class="pm-title">Color Space Pipeline</span>
+                                            <span class="pm-title">Colorimetric Pipeline</span>
                                             <span class="pm-number" style="font-size:13px; font-weight:600;">CIE-LAB + HSV</span>
                                         </div>
                                     </div>
@@ -517,10 +570,12 @@
                                 <thead>
                                     <tr>
                                         <th>Date & Time</th>
+                                        <th>Plot / Tree ID</th>
                                         <th>Image</th>
-                                        <th>Prediction</th>
+                                        <th>Diagnosed Pathology</th>
+                                        <th>PLAA %</th>
+                                        <th>ΔPLAA Efficacy</th>
                                         <th>Confidence</th>
-                                        <th>Model Version</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

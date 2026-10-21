@@ -414,11 +414,11 @@ def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=No
 
     # 3. Safe Spray Window Evaluation
     if rain_prob >= 40.0:
-        spray_status = "HOLD - RAIN WASH-OFF RISK"
+        spray_status = "HOLD SPRAY — RAIN WASH-OFF RISK"
         spray_safe = False
         spray_reason = f"Rain probability ({int(rain_prob)}%) poses severe risk of chemical wash-off before foliar absorption. Delay spraying."
     elif wind >= 18.0:
-        spray_status = "HOLD - WIND DRIFT HAZARD"
+        spray_status = "HOLD SPRAY — WIND DRIFT HAZARD"
         spray_safe = False
         spray_reason = f"Elevated wind velocity ({wind} km/h) exceeds safe threshold (<15 km/h) causing droplet drift and off-target pesticide loss."
     else:
@@ -528,6 +528,35 @@ def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=No
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
+
+@app.route('/api/weather', methods=['GET'])
+def get_live_weather():
+    lat = request.args.get('lat', default='11.66', type=str)
+    lon = request.args.get('lon', default='78.14', type=str)
+    try:
+        req = urllib.request.Request(
+            f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation_probability",
+            headers={'User-Agent': 'MangoHealth-App/1.0'}
+        )
+        with urllib.request.urlopen(req, timeout=2.5) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            cur = data.get('current', {})
+            return jsonify({
+                "success": True,
+                "temperature": cur.get('temperature_2m', 29.0),
+                "humidity": cur.get('relative_humidity_2m', 82),
+                "windSpeed": cur.get('wind_speed_10m', 11.0),
+                "rainProb": cur.get('precipitation_probability', 15)
+            })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "temperature": 29.0,
+            "humidity": 82,
+            "windSpeed": 11.0,
+            "rainProb": 15
+        })
 
 @app.route('/predict', methods=['POST'])
 def predict():

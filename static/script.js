@@ -124,25 +124,48 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGradCamSrc = "";
     let currentLastPredictionData = null;
 
-    // Sync Live Weather from Open-Meteo
+    // Sync Live Weather from backend /api/weather or Open-Meteo
     if (btnSyncWeather) {
         btnSyncWeather.addEventListener('click', async () => {
-            btnSyncWeather.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Syncing...`;
+            btnSyncWeather.innerHTML = `<i class="ph ph-spinner ph-spin"></i> <span>Syncing...</span>`;
             try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=11.66&longitude=78.14&current=temperature_2m,relative_humidity_2m,wind_speed_10m');
-                const data = await res.json();
-                if (data && data.current) {
-                    if (data.current.temperature_2m !== undefined) document.getElementById('input-temp').value = data.current.temperature_2m;
-                    if (data.current.relative_humidity_2m !== undefined) document.getElementById('input-humidity').value = data.current.relative_humidity_2m;
-                    if (data.current.wind_speed_10m !== undefined) document.getElementById('input-wind').value = data.current.wind_speed_10m;
-                    btnSyncWeather.innerHTML = `<i class="ph-fill ph-check"></i> Synced Live!`;
+                let data = null;
+                // Attempt backend /api/weather proxy first
+                try {
+                    const res = await fetch('/api/weather?lat=11.66&lon=78.14');
+                    data = await res.json();
+                } catch (e) {
+                    data = null;
+                }
+
+                // Direct Open-Meteo fallback
+                if (!data || !data.success) {
+                    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=11.66&longitude=78.14&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation_probability');
+                    const raw = await res.json();
+                    if (raw && raw.current) {
+                        data = {
+                            success: true,
+                            temperature: raw.current.temperature_2m,
+                            humidity: raw.current.relative_humidity_2m,
+                            windSpeed: raw.current.wind_speed_10m,
+                            rainProb: raw.current.precipitation_probability !== undefined ? raw.current.precipitation_probability : 15
+                        };
+                    }
+                }
+
+                if (data && (data.success || data.temperature !== undefined)) {
+                    if (data.temperature !== undefined) document.getElementById('input-temp').value = data.temperature;
+                    if (data.humidity !== undefined) document.getElementById('input-humidity').value = data.humidity;
+                    if (data.windSpeed !== undefined) document.getElementById('input-wind').value = data.windSpeed;
+                    if (data.rainProb !== undefined) document.getElementById('input-rain').value = data.rainProb;
+                    btnSyncWeather.innerHTML = `<i class="ph-fill ph-check-circle text-success"></i> <span>Synced Live!</span>`;
                 }
             } catch (err) {
                 console.warn('Weather sync error:', err);
-                btnSyncWeather.innerHTML = `<i class="ph ph-warning"></i> Weather Default`;
+                btnSyncWeather.innerHTML = `<i class="ph ph-warning"></i> <span>Default Used</span>`;
             }
             setTimeout(() => {
-                btnSyncWeather.innerHTML = `<i class="ph ph-arrows-clockwise"></i> Sync Live Weather`;
+                btnSyncWeather.innerHTML = `<i class="ph ph-cloud-sun"></i> <span>Sync Live Weather</span>`;
             }, 3000);
         });
     }
@@ -227,9 +250,11 @@ document.addEventListener('DOMContentLoaded', () => {
         bboxOverlay.classList.add('hidden');
         if (polygonOverlay) polygonOverlay.classList.add('hidden');
         if (canvasTabSwitcher) canvasTabSwitcher.classList.add('hidden');
+        const plotDeltaBanner = document.getElementById('plot-delta-banner');
+        if (plotDeltaBanner) plotDeltaBanner.classList.add('hidden');
     }
 
-    // Canvas Visual Tab Switcher Logic
+    // 3-Mode Interactive Vision Canvas Switcher Logic
     function setupCanvasTabs() {
         const tabs = [
             { btn: tabBtnOriginal, mode: 'original' },
@@ -244,16 +269,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 t.btn.classList.add('active');
 
                 if (t.mode === 'original') {
+                    // Mode 1: Leaf Contour (OpenCV) — shows original image + SVG contour & bbox
                     previewImage.src = currentOriginalImageSrc;
                     if (polygonOverlay && currentLastPredictionData && currentLastPredictionData.polygon) {
                         polygonOverlay.classList.remove('hidden');
                     }
+                    if (bboxOverlay && currentLastPredictionData && currentLastPredictionData.bbox) {
+                        bboxOverlay.classList.remove('hidden');
+                    }
                 } else if (t.mode === 'lesion') {
+                    // Mode 2: Lesion Planimetry Mask (PLAA) — displays severityMetrics.lesionMaskBase64
                     if (currentLesionMaskSrc) previewImage.src = currentLesionMaskSrc;
                     if (polygonOverlay) polygonOverlay.classList.add('hidden');
+                    if (bboxOverlay) bboxOverlay.classList.add('hidden');
                 } else if (t.mode === 'gradcam') {
+                    // Mode 3: Grad-CAM AI Attention (XAI) — displays explainability.gradCamBase64
                     if (currentGradCamSrc) previewImage.src = currentGradCamSrc;
                     if (polygonOverlay) polygonOverlay.classList.add('hidden');
+                    if (bboxOverlay) bboxOverlay.classList.add('hidden');
                 }
             };
         });
@@ -272,8 +305,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('file', currentFile);
         
-        // Pass orchard and microclimatic parameters
-        const plotId = document.getElementById('input-plot-id')?.value || 'ORCHARD-B3';
+        // Pass orchard and microclimatic parameters from Pre-Scan Context Bar
+        const plotId = document.getElementById('input-plot-id')?.value.trim() || 'TREE-01';
         const treeCount = document.getElementById('input-tree-count')?.value || '10';
         const temp = document.getElementById('input-temp')?.value || '29.0';
         const humidity = document.getElementById('input-humidity')?.value || '82';
@@ -332,10 +365,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     epidemiology: {
                         plotId: plotId,
-                        tempC: 28.5,
-                        humidityPct: 76,
-                        windKmh: 9.5,
-                        rainProbPct: 15,
+                        tempC: parseFloat(temp) || 28.5,
+                        humidityPct: parseInt(humidity) || 76,
+                        windKmh: parseFloat(wind) || 9.5,
+                        rainProbPct: parseInt(rainProb) || 15,
                         sporeRiskIndex: 84,
                         sporeRiskLevel: "HIGH",
                         sprayWindowStatus: "OPTIMAL SPRAY WINDOW",
@@ -366,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLesionMaskSrc = data.severityMetrics?.lesionMaskBase64 || currentOriginalImageSrc;
         currentGradCamSrc = data.explainability?.gradCamBase64 || currentOriginalImageSrc;
 
-        // Reveal Canvas Tab Switcher & set to ROI mode
+        // Reveal 3-Mode Canvas Tab Switcher & set to Leaf Contour (OpenCV)
         if (canvasTabSwitcher) {
             canvasTabSwitcher.classList.remove('hidden');
             if (tabBtnOriginal) tabBtnOriginal.classList.add('active');
@@ -411,52 +444,148 @@ document.addEventListener('DOMContentLoaded', () => {
             lowConfidenceWarning.classList.add('hidden');
         }
 
-        // 2. Primary Diagnostic Card
+        const sev = data.severityMetrics || { plaaPercentage: 0.0, severityGrade: 0, severityLabel: "Grade 0 - Healthy", lesionPixels: 0, leafPixels: 10000 };
+        const plotId = (document.getElementById('input-plot-id')?.value.trim()) || data.epidemiology?.plotId || 'TREE-01';
+
+        // ======================================================================
+        // 2. LONGITUDINAL PLOT EFFICACY TRACKER (ΔPLAA)
+        // ======================================================================
+        let storedHistory = [];
+        try {
+            storedHistory = JSON.parse(localStorage.getItem('mango_leaf_history') || '[]');
+        } catch (e) {
+            storedHistory = [];
+        }
+
+        // Search for previous scan of the exact same plotId
+        const prevScan = storedHistory.find(r => r.plotId && r.plotId.trim().toLowerCase() === plotId.trim().toLowerCase());
+        let deltaPlaa = null;
+        let deltaBadgeText = "";
+        let deltaBadgeClass = "treatment-efficacy-badge baseline";
+        let deltaBannerClass = "plot-delta-banner";
+        let headlineText = "";
+        let subText = "";
+        let deltaIconHtml = `<i class="ph-bold ph-chart-line-up"></i>`;
+
+        if (prevScan && typeof prevScan.plaaPercentage === 'number') {
+            deltaPlaa = Number((sev.plaaPercentage - prevScan.plaaPercentage).toFixed(1));
+            const sign = deltaPlaa > 0 ? '+' : '';
+            const formattedDelta = `${sign}${deltaPlaa.toFixed(1)}%`;
+
+            if (deltaPlaa <= -0.1) {
+                // Infection Receding
+                deltaBadgeText = `ΔPLAA: ${formattedDelta} vs previous scan — Infection Receding`;
+                deltaBadgeClass = "treatment-efficacy-badge receding";
+                deltaBannerClass = "plot-delta-banner";
+                headlineText = "Infection Receding (Canopy Healing)";
+                subText = `Quantitative improvement: Necrotic lesion area dropped by ${Math.abs(deltaPlaa).toFixed(1)}% compared to scan on ${prevScan.dateStr || 'earlier'} (${prevScan.plaaPercentage.toFixed(1)}% PLAA).`;
+                deltaIconHtml = `<i class="ph-bold ph-trend-down"></i>`;
+            } else if (deltaPlaa >= 0.1) {
+                // Outbreak Expanding
+                deltaBadgeText = `ΔPLAA: ${formattedDelta} vs previous scan — Outbreak Expanding`;
+                deltaBadgeClass = "treatment-efficacy-badge expanding";
+                deltaBannerClass = "plot-delta-banner expanding";
+                headlineText = "Outbreak Expanding (Immediate Action Required)";
+                subText = `Lesion progression alert: Necrotic surface area expanded by +${deltaPlaa.toFixed(1)}% compared to scan on ${prevScan.dateStr || 'earlier'} (${prevScan.plaaPercentage.toFixed(1)}% PLAA). Review spray window.`;
+                deltaIconHtml = `<i class="ph-bold ph-trend-up"></i>`;
+            } else {
+                // Stable
+                deltaBadgeText = `ΔPLAA: 0.0% vs previous scan — Infection Stable`;
+                deltaBadgeClass = "treatment-efficacy-badge stable";
+                deltaBannerClass = "plot-delta-banner";
+                headlineText = "Lesion Area Unchanged (Stable)";
+                subText = `Necrotic surface area remains steady at ${sev.plaaPercentage.toFixed(1)}% compared to previous assessment (${prevScan.plaaPercentage.toFixed(1)}% PLAA).`;
+                deltaIconHtml = `<i class="ph-bold ph-equals"></i>`;
+            }
+        } else {
+            // First baseline assessment
+            deltaBadgeText = `Plot ${plotId}: Baseline Active`;
+            deltaBadgeClass = "treatment-efficacy-badge baseline";
+            deltaBannerClass = "plot-delta-banner";
+            headlineText = `Baseline Scan Recorded for ${plotId}`;
+            subText = `Initial assessment registered at ${sev.plaaPercentage.toFixed(1)}% PLAA. Scanning ${plotId} again will compute longitudinal treatment delta (ΔPLAA).`;
+            deltaIconHtml = `<i class="ph-bold ph-chart-line-up"></i>`;
+        }
+
+        // Render Longitudinal Banner
+        const plotDeltaBanner = document.getElementById('plot-delta-banner');
+        const pdbPlotId = document.getElementById('pdb-plot-id');
+        const pdbHeadline = document.getElementById('pdb-headline');
+        const pdbSubtext = document.getElementById('pdb-subtext');
+        const treatmentEfficacyBadge = document.getElementById('treatment-efficacy-badge');
+        const pdbIcon = document.getElementById('pdb-icon');
+
+        if (plotDeltaBanner) {
+            plotDeltaBanner.className = deltaBannerClass;
+            plotDeltaBanner.classList.remove('hidden');
+            if (pdbPlotId) pdbPlotId.textContent = `PLOT: ${plotId}`;
+            if (pdbHeadline) pdbHeadline.textContent = headlineText;
+            if (pdbSubtext) pdbSubtext.textContent = subText;
+            if (pdbIcon) pdbIcon.innerHTML = deltaIconHtml;
+            if (treatmentEfficacyBadge) {
+                treatmentEfficacyBadge.className = deltaBadgeClass;
+                treatmentEfficacyBadge.innerHTML = deltaBadgeText;
+            }
+        }
+
+        // 3. Primary Diagnostic & Severity Card
         predictionMainCard.className = 'prediction-main-card ' + (isHealthy ? 'healthy' : '');
         predictionTitle.textContent = data.topPrediction;
         predictionConfVal.textContent = (data.confidence * 100).toFixed(1);
-
-        const sev = data.severityMetrics || { plaaPercentage: 0.0, severityGrade: 0, severityLabel: "Grade 0 - Healthy", lesionPixels: 0, leafPixels: 10000 };
         severityBadgeMain.textContent = `Grade ${sev.severityGrade}`;
         plaaPctVal.textContent = sev.plaaPercentage.toFixed(1);
 
-        // 3. Quantitative Planimetry & Severity Card
+        // 4. Visual 0–5 Horsfall-Barratt Stepped Meter & Progress Bar
         badgeSeverityLabel.textContent = sev.severityLabel;
         badgeSeverityLabel.className = 'badge ' + (sev.severityGrade === 0 ? 'badge-success' : (sev.severityGrade <= 2 ? 'badge-warning' : 'badge-danger'));
+        
+        // Highlight corresponding discrete step 0 to 5
+        for (let g = 0; g <= 5; g++) {
+            const stepEl = document.getElementById(`hb-step-${g}`);
+            if (stepEl) {
+                if (g === sev.severityGrade) {
+                    stepEl.classList.add('active');
+                } else {
+                    stepEl.classList.remove('active');
+                }
+            }
+        }
+
         const meterWidth = Math.min(100, Math.max(3, sev.plaaPercentage * 2));
         plaaMeterFill.style.width = meterWidth + '%';
         metricLesionPixels.textContent = `${(sev.lesionPixels || 0).toLocaleString()} px`;
         metricLeafPixels.textContent = `${(sev.leafPixels || 0).toLocaleString()} px`;
 
-        // 4. Explainable AI & Spatial Grounding Card
+        // 5. Explainable AI & Spatial Grounding Card
         const xai = data.explainability || { spatialContainmentScore: 0.88, groundingVerified: true, groundingNote: "Attention concentrated within lamina." };
-        spatialContainmentVal.textContent = `${Math.round(xai.spatialContainmentScore * 100)}%`;
+        const contPct = Math.round(xai.spatialContainmentScore * 100);
+        spatialContainmentVal.textContent = `${contPct}%`;
         groundingNoteText.textContent = xai.groundingNote;
         if (xai.groundingVerified) {
             groundingBadge.className = 'grounding-badge verified';
-            groundingBadge.innerHTML = `<i class="ph-fill ph-check-circle"></i> Grounding Verified`;
+            groundingBadge.innerHTML = `<i class="ph-fill ph-check-circle"></i> Verified: ${contPct}% Attention Inside Leaf Contour`;
         } else {
             groundingBadge.className = 'grounding-badge unverified';
-            groundingBadge.innerHTML = `<i class="ph-fill ph-warning-circle"></i> Border Ambiguity`;
+            groundingBadge.innerHTML = `<i class="ph-fill ph-warning-circle"></i> Caution: ${contPct}% Attention Inside Leaf Contour`;
         }
 
-        // 5. Epidemiological Spore Risk & Spray Window Card
+        // 6. Epidemiological Spore Risk & Spray Window Card
         const epi = data.epidemiology || { sporeRiskIndex: 30, sporeRiskLevel: "LOW", sprayWindowStatus: "OPTIMAL SPRAY WINDOW", sprayWindowSafe: true, advisoryNote: "Baseline orchard scouting recommended." };
         sporeRiskBadge.textContent = `Spore Risk: ${epi.sporeRiskLevel}`;
         sporeRiskBadge.className = 'badge ' + (epi.sporeRiskLevel === 'LOW' ? 'badge-success' : (epi.sporeRiskLevel === 'MODERATE' ? 'badge-warning' : 'badge-danger'));
         sporeRiskFill.style.width = `${Math.min(100, epi.sporeRiskIndex)}%`;
 
-        if (epi.sprayWindowSafe) {
+        if (epi.sprayWindowSafe || (epi.sprayWindowStatus && epi.sprayWindowStatus.toUpperCase().includes('OPTIMAL'))) {
             sprayWindowBanner.className = 'spray-window-banner optimal';
             sprayWindowIcon.className = 'ph-fill ph-check-circle';
         } else {
             sprayWindowBanner.className = 'spray-window-banner hold';
             sprayWindowIcon.className = 'ph-fill ph-warning-circle';
         }
-        sprayWindowStatus.textContent = epi.sprayWindowStatus;
+        sprayWindowStatus.textContent = epi.sprayWindowStatus || "OPTIMAL SPRAY WINDOW";
         sprayWindowReason.textContent = epi.advisoryNote;
 
-        // 6. Severity-Calibrated Precision Dosage Card
+        // 7. Severity-Calibrated Precision Dosage Card
         const rx = data.dosagePrescription || { agentName: "Neem Oil 1500 ppm", treatmentType: "Bio-Prophylaxis", dosePerLiter: "3.0 mL/L", treeCount: 10, totalWaterLiters: 150, totalChemicalAmount: "450 mL", actionProtocol: "Standard foliar application." };
         dosageAgentName.textContent = rx.agentName;
         dosageTreatmentType.textContent = rx.treatmentType;
@@ -466,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dosageChemAmount.textContent = rx.totalChemicalAmount;
         dosageActionProtocol.textContent = rx.actionProtocol;
 
-        // 7. Multi-Class Confidence Spectrum
+        // 8. Multi-Class Confidence Spectrum
         probabilitiesList.innerHTML = '';
         data.allPredictions.forEach(pred => {
             const pct = (pred.confidence * 100).toFixed(1);
@@ -491,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // 8. Quick Disease Info Inject
+        // 9. Quick Disease Info Inject
         diseaseInfoQuick.classList.remove('hidden');
         const info = diseaseData[data.topPrediction] || diseaseData["Healthy"];
         diseaseInfoQuick.innerHTML = `
@@ -503,24 +632,54 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="btn btn-secondary btn-block" onclick="openDiseaseModal('${info.name}')">Read Full Agronomic Guide</button>
         `;
 
-        // 9. Append to History Table dynamically
+        // 10. Persist to localStorage & Append to History Table
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = `Today, ${timeStr}`;
+        const fileName = currentFile ? currentFile.name : `sample_${plotId.toLowerCase()}.jpg`;
+
+        const newRecord = {
+            id: Date.now(),
+            dateStr: dateStr,
+            plotId: plotId,
+            fileName: fileName,
+            pred: data.topPrediction,
+            conf: data.confidence,
+            plaaPercentage: sev.plaaPercentage,
+            severityGrade: sev.severityGrade,
+            deltaPlaa: deltaPlaa,
+            deltaFormatted: deltaPlaa !== null ? `${deltaPlaa > 0 ? '+' : ''}${deltaPlaa.toFixed(1)}%` : 'Baseline'
+        };
+
+        storedHistory.unshift(newRecord);
+        try {
+            localStorage.setItem('mango_leaf_history', JSON.stringify(storedHistory.slice(0, 50)));
+        } catch (e) {
+            console.warn('LocalStorage save error:', e);
+        }
+
         if (historyTbody) {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const dateStr = `Today, ${timeStr}`;
-            const fileName = currentFile ? currentFile.name : `sample_plot_${data.topPrediction.toLowerCase()}.jpg`;
+            const deltaBadgeStyle = deltaPlaa === null 
+                ? 'background-color:#E2E8F0; color:#475569;' 
+                : (deltaPlaa < 0 ? 'background-color:#D1FAE5; color:#065F46;' : 'background-color:#FEE2E2; color:#991B1B;');
+            const deltaLabel = deltaPlaa === null 
+                ? 'Baseline' 
+                : `${deltaPlaa > 0 ? '+' : ''}${deltaPlaa.toFixed(1)}%`;
+
             const newRow = `
                 <tr>
                     <td style="color:var(--text-muted)">${dateStr}</td>
+                    <td><span style="font-family:monospace; font-weight:700; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${plotId}</span></td>
                     <td style="font-family:monospace; font-size:13px;">${fileName}</td>
-                    <td class="cell-predict ${isHealthy ? 'healthy' : 'disease'}">${data.topPrediction} (G${sev.severityGrade})</td>
+                    <td class="cell-predict ${isHealthy ? 'healthy' : 'disease'}">${data.topPrediction} (Grade ${sev.severityGrade})</td>
+                    <td style="font-weight:700;">${sev.plaaPercentage.toFixed(1)}%</td>
+                    <td><span style="display:inline-block; padding:3px 8px; border-radius:99px; font-size:11px; font-weight:700; ${deltaBadgeStyle}">${deltaLabel}</span></td>
                     <td>
                         <div class="conf-bar-container">
                             <div class="conf-bar-bg"><div class="conf-bar-fill ${data.confidence > 0.9 ? 'high' : 'medium'}" style="width: ${data.confidence * 100}%"></div></div>
                             <span class="conf-text">${(data.confidence * 100).toFixed(1)}%</span>
                         </div>
                     </td>
-                    <td style="font-family:monospace; font-size:12px; color:var(--text-muted)">v1.0 (Q-AI)</td>
                     <td><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openDiseaseModal('${data.topPrediction}')">View</button></td>
                 </tr>
             `;
@@ -801,58 +960,106 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Populate History Table (Mock Data) ---
+    // --- Populate History Table & Dashboard Recent (Integrated with localStorage) ---
     const historyTbody = document.getElementById('history-tbody');
     const dashRecentTbody = document.getElementById('dashboard-recent-tbody');
     
     const mockHistory = [
-        { leaf: "leaf_batch12_001.jpg", pred: "Powdery Mildew", conf: 0.912, date: "Today, 10:42 AM", v: "v1.0" },
-        { leaf: "farmA_sample4.jpg", pred: "Healthy", conf: 0.984, date: "Today, 09:15 AM", v: "v1.0" },
-        { leaf: "img_8472.png", pred: "Gall Midge", conf: 0.784, date: "Yesterday, 16:30 PM", v: "v1.0" },
-        { leaf: "unknown_04.jpg", pred: "Die Black", conf: 0.881, date: "Yesterday, 11:20 AM", v: "v1.0" },
-        { leaf: "sample_test_9.jpg", pred: "Anthracnose", conf: 0.952, date: "Aug 11, 2026", v: "v1.0" }
+        { plotId: "ORCHARD-B3", leaf: "farmA_sample4.jpg", pred: "Healthy", grade: 0, plaa: 0.4, delta: -6.4, deltaStr: "-6.4%", conf: 0.984, date: "Today, 09:15 AM" },
+        { plotId: "TREE-01", leaf: "leaf_batch12_001.jpg", pred: "Powdery Mildew", grade: 3, plaa: 18.4, delta: null, deltaStr: "Baseline", conf: 0.912, date: "Today, 10:42 AM" },
+        { plotId: "ORCHARD-NORTH", leaf: "img_8472.png", pred: "Gall Midge", grade: 2, plaa: 8.7, delta: null, deltaStr: "Baseline", conf: 0.784, date: "Yesterday, 16:30 PM" },
+        { plotId: "PLOT-C2", leaf: "unknown_04.jpg", pred: "Die Black", grade: 4, plaa: 34.2, delta: +4.2, deltaStr: "+4.2%", conf: 0.881, date: "Yesterday, 11:20 AM" },
+        { plotId: "ORCHARD-B3", leaf: "sample_test_9.jpg", pred: "Anthracnose", grade: 3, plaa: 22.8, delta: null, deltaStr: "Baseline", conf: 0.952, date: "Aug 11, 2026" }
     ];
 
-    function generateTableRow(row) {
-        const isHealthy = row.pred === 'Healthy';
-        const colorClass = isHealthy ? 'healthy' : 'disease';
-        return `
-            <tr>
-                <td style="font-family:monospace; font-size:13px;">${row.leaf}</td>
-                <td class="cell-predict ${colorClass}">${row.pred}</td>
-                <td>
-                    <div class="conf-bar-container">
-                        <div class="conf-bar-bg"><div class="conf-bar-fill ${row.conf > 0.9 ? 'high' : 'medium'}" style="width: ${row.conf*100}%"></div></div>
-                        <span class="conf-text">${(row.conf*100).toFixed(1)}%</span>
-                    </div>
-                </td>
-                <td style="color:var(--text-muted)">${row.date}</td>
-                <td><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openDiseaseModal('${row.pred}')">Details</button></td>
-            </tr>
-        `;
-    }
+    function renderHistoryRows() {
+        if (!historyTbody) return;
+        historyTbody.innerHTML = '';
+        
+        let stored = [];
+        try {
+            stored = JSON.parse(localStorage.getItem('mango_leaf_history') || '[]');
+        } catch (e) {
+            stored = [];
+        }
 
-    if(historyTbody && dashRecentTbody) {
-        mockHistory.forEach(row => {
+        // Render saved scans first
+        stored.forEach(row => {
+            const isH = (row.pred || '').toLowerCase() === 'healthy';
+            const deltaBadgeStyle = row.deltaPlaa === null 
+                ? 'background-color:#E2E8F0; color:#475569;' 
+                : (row.deltaPlaa < 0 ? 'background-color:#D1FAE5; color:#065F46;' : 'background-color:#FEE2E2; color:#991B1B;');
+
             const html = `
                 <tr>
-                    <td style="color:var(--text-muted)">${row.date}</td>
-                    <td style="font-family:monospace; font-size:13px;">${row.leaf}</td>
-                    <td class="cell-predict ${row.pred==='Healthy'?'healthy':'disease'}">${row.pred}</td>
+                    <td style="color:var(--text-muted)">${row.dateStr}</td>
+                    <td><span style="font-family:monospace; font-weight:700; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${row.plotId || 'TREE-01'}</span></td>
+                    <td style="font-family:monospace; font-size:13px;">${row.fileName}</td>
+                    <td class="cell-predict ${isH ? 'healthy' : 'disease'}">${row.pred} (Grade ${row.severityGrade || 0})</td>
+                    <td style="font-weight:700;">${(row.plaaPercentage || 0).toFixed(1)}%</td>
+                    <td><span style="display:inline-block; padding:3px 8px; border-radius:99px; font-size:11px; font-weight:700; ${deltaBadgeStyle}">${row.deltaFormatted || 'Baseline'}</span></td>
                     <td>
                         <div class="conf-bar-container">
-                            <div class="conf-bar-bg"><div class="conf-bar-fill ${row.conf > 0.9 ? 'high' : 'medium'}" style="width: ${row.conf*100}%"></div></div>
-                            <span class="conf-text">${(row.conf*100).toFixed(1)}%</span>
+                            <div class="conf-bar-bg"><div class="conf-bar-fill ${row.conf > 0.9 ? 'high' : 'medium'}" style="width: ${row.conf * 100}%"></div></div>
+                            <span class="conf-text">${(row.conf * 100).toFixed(1)}%</span>
                         </div>
                     </td>
-                    <td style="font-family:monospace; font-size:12px; color:var(--text-muted)">${row.v}</td>
                     <td><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openDiseaseModal('${row.pred}')">View</button></td>
                 </tr>
             `;
-            historyTbody.innerHTML += html;
-            dashRecentTbody.innerHTML += generateTableRow(row);
+            historyTbody.insertAdjacentHTML('beforeend', html);
+        });
+
+        // Seed with demo baseline records if empty or below 5
+        mockHistory.forEach(row => {
+            const isH = row.pred === 'Healthy';
+            const deltaBadgeStyle = row.delta === null 
+                ? 'background-color:#E2E8F0; color:#475569;' 
+                : (row.delta < 0 ? 'background-color:#D1FAE5; color:#065F46;' : 'background-color:#FEE2E2; color:#991B1B;');
+
+            const html = `
+                <tr>
+                    <td style="color:var(--text-muted)">${row.date}</td>
+                    <td><span style="font-family:monospace; font-weight:700; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${row.plotId}</span></td>
+                    <td style="font-family:monospace; font-size:13px;">${row.leaf}</td>
+                    <td class="cell-predict ${isH ? 'healthy' : 'disease'}">${row.pred} (Grade ${row.grade})</td>
+                    <td style="font-weight:700;">${row.plaa.toFixed(1)}%</td>
+                    <td><span style="display:inline-block; padding:3px 8px; border-radius:99px; font-size:11px; font-weight:700; ${deltaBadgeStyle}">${row.deltaStr}</span></td>
+                    <td>
+                        <div class="conf-bar-container">
+                            <div class="conf-bar-bg"><div class="conf-bar-fill ${row.conf > 0.9 ? 'high' : 'medium'}" style="width: ${row.conf * 100}%"></div></div>
+                            <span class="conf-text">${(row.conf * 100).toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openDiseaseModal('${row.pred}')">View</button></td>
+                </tr>
+            `;
+            historyTbody.insertAdjacentHTML('beforeend', html);
         });
     }
+
+    if (dashRecentTbody) {
+        mockHistory.forEach(row => {
+            const isH = row.pred === 'Healthy';
+            const html = `
+                <tr>
+                    <td style="font-family:monospace; font-size:13px;">${row.leaf}</td>
+                    <td class="cell-predict ${isH ? 'healthy' : 'disease'}">${row.pred}</td>
+                    <td>
+                        <div class="conf-bar-container">
+                            <div class="conf-bar-bg"><div class="conf-bar-fill ${row.conf > 0.9 ? 'high' : 'medium'}" style="width: ${row.conf * 100}%"></div></div>
+                            <span class="conf-text">${(row.conf * 100).toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td style="color:var(--text-muted)">${row.date}</td>
+                    <td><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openDiseaseModal('${row.pred}')">Details</button></td>
+                </tr>
+            `;
+            dashRecentTbody.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    renderHistoryRows();
 
     // --- Init Charts ---
     if(typeof Chart !== 'undefined') {
