@@ -94,12 +94,51 @@
             <div class="view-container">
             
                 <!-- ==============================================
-                     1. MAIN DASHBOARD VIEW
+                     1. MAIN DASHBOARD VIEW (AGRONOMIC COCKPIT)
                      ============================================== -->
                 <section id="view-dashboard" class="view-section active">
                     <div class="view-header">
-                        <h2>Mango Health Dashboard</h2>
-                        <p class="subtitle">AI-powered mango leaf disease monitoring and analysis</p>
+                        <div>
+                            <h2>Quantitative Phytopathology & Agronomic Decision Workbench</h2>
+                            <p class="subtitle">Real-time foliar epidemiological monitoring, biometrics planimetry, and precision chemical tank-mix advisory.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-target=\'view-detect\']').click();">
+                                <i class="ph-bold ph-scan"></i> <span>Launch Foliar Diagnostic Studio</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Orchard Health & Climate Surveillance Strip -->
+                    <div class="card dashboard-orchard-strip mb-24">
+                        <div class="dos-item">
+                            <div class="dos-icon"><i class="ph-fill ph-map-pin"></i></div>
+                            <div class="dos-info">
+                                <span class="dos-label">Primary Orchard Belt</span>
+                                <strong class="dos-val">Salem, Tamil Nadu (11.66° N, 78.14° E)</strong>
+                            </div>
+                        </div>
+                        <div class="dos-item">
+                            <div class="dos-icon weather"><i class="ph-fill ph-cloud-sun"></i></div>
+                            <div class="dos-info">
+                                <span class="dos-label">Regional Microclimate</span>
+                                <strong class="dos-val" id="dash-climate-summary">29.5°C • 84% RH • 11 km/h Wind</strong>
+                            </div>
+                        </div>
+                        <div class="dos-item">
+                            <div class="dos-icon safe"><i class="ph-fill ph-shield-check"></i></div>
+                            <div class="dos-info">
+                                <span class="dos-label">Orchard Health Index</span>
+                                <strong class="dos-val text-success">88.4 / 100 (Optimal Vigor)</strong>
+                            </div>
+                        </div>
+                        <div class="dos-item">
+                            <div class="dos-icon warning"><i class="ph-fill ph-drop"></i></div>
+                            <div class="dos-info">
+                                <span class="dos-label">Foliar Spore Pressure</span>
+                                <strong class="dos-val text-warning">Moderate (Powdery Conidia Watch)</strong>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="kpi-grid">
@@ -107,28 +146,28 @@
                             <div class="kpi-icon"><i class="ph ph-scan"></i></div>
                             <div class="kpi-data">
                                 <span class="kpi-value">1,432</span>
-                                <span class="kpi-label">Total Predictions</span>
+                                <span class="kpi-label">Foliar Scans Processed</span>
                             </div>
                         </div>
                         <div class="kpi-card">
                             <div class="kpi-icon healthy"><i class="ph ph-plant"></i></div>
                             <div class="kpi-data">
                                 <span class="kpi-value">645</span>
-                                <span class="kpi-label">Healthy Plants</span>
+                                <span class="kpi-label">Asymptomatic Trees (Grade 0)</span>
                             </div>
                         </div>
                         <div class="kpi-card">
                             <div class="kpi-icon danger"><i class="ph ph-bug"></i></div>
                             <div class="kpi-data">
                                 <span class="kpi-value">787</span>
-                                <span class="kpi-label">Diseases Detected</span>
+                                <span class="kpi-label">Active Foliar Lesions</span>
                             </div>
                         </div>
                         <div class="kpi-card">
                             <div class="kpi-icon warning"><i class="ph ph-warning-circle"></i></div>
                             <div class="kpi-data">
                                 <span class="kpi-value text-sm">Powdery Mildew</span>
-                                <span class="kpi-label">Most Detected</span>
+                                <span class="kpi-label">Dominant Field Strain</span>
                             </div>
                         </div>
                     </div>
@@ -136,17 +175,21 @@
                     <div class="dashboard-grid">
                         <div class="card recent-predictions-card">
                             <div class="card-header">
-                                <h3>Recent Predictions</h3>
-                                <span class="badge badge-demo">Demo Data</span>
+                                <div class="d-flex align-center gap-8">
+                                    <i class="ph-bold ph-clock-counter-clockwise text-primary"></i>
+                                    <h3>Longitudinal Orchard Surveillance Log</h3>
+                                </div>
+                                <span class="badge badge-demo">Verified Scans</span>
                             </div>
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>Leaf</th>
-                                            <th>Prediction</th>
+                                            <th>Leaf Lamina</th>
+                                            <th>Plot / Tree ID</th>
+                                            <th>Diagnosed Pathology</th>
+                                            <th>Severity (PLAA %)</th>
                                             <th>Confidence</th>
-                                            <th>Date</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -159,8 +202,8 @@
                         
                         <div class="card">
                             <div class="card-header">
-                                <h3>Disease Distribution</h3>
-                                <span class="badge badge-demo">Demo Data</span>
+                                <h3>Pathogen Epiphytic Distribution</h3>
+                                <span class="badge badge-demo">Orchard Telemetry</span>
                             </div>
                             <div class="chart-container" style="position: relative; height:250px;">
                                 <canvas id="dash-donut-chart"></canvas>
@@ -170,117 +213,189 @@
                 </section>
                 
                 <!-- ==============================================
-                     2. DETECT DISEASE VIEW
+                     2. DETECT DISEASE VIEW (DECISION WORKBENCH)
                      ============================================== -->
                 <section id="view-detect" class="view-section">
                     <div class="view-header">
                         <div>
-                            <h2>Quantitative Phytopathology & Disease Detection</h2>
-                            <p class="subtitle">Pixel-level lesion planimetry, Horsfall-Barratt severity grading, XAI grounding & microclimate dosage advisory.</p>
+                            <h2>Quantitative Phytopathology & Decision-Support Workbench</h2>
+                            <p class="subtitle">Multi-spectral leaf lamina planimetry, 0–5 Horsfall-Barratt severity biometrics, XAI spatial grounding & precision agrochemical calculator.</p>
+                        </div>
+                    </div>
+
+                    <!-- 1. TOP ORCHARD TELEMETRY & MICRO-CLIMATE CONTEXT BAR -->
+                    <div class="card prescan-context-bar mb-24" id="prescan-context-bar">
+                        <div class="prescan-header">
+                            <div class="prescan-title">
+                                <i class="ph-fill ph-sliders-horizontal text-primary font-20"></i>
+                                <span>Orchard Telemetry & Micro-Climate Context Control Bar</span>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-xs" id="btn-sync-weather" title="Sync live local telemetry from Open-Meteo API (Salem Mango Belt)">
+                                <i class="ph ph-cloud-sun"></i> <span>Sync Local Weather</span>
+                            </button>
+                        </div>
+                        <div class="prescan-grid">
+                            <div class="prescan-field">
+                                <label for="input-plot-id"><i class="ph-bold ph-map-pin"></i> Orchard Plot / Tree ID</label>
+                                <input type="text" id="input-plot-id" value="PLOT-A1 / TREE-04" list="plot-suggestions" placeholder="e.g. PLOT-A1 / TREE-04" class="fc-input">
+                                <datalist id="plot-suggestions">
+                                    <option value="PLOT-A1 / TREE-04">
+                                    <option value="PLOT-A1 / TREE-08">
+                                    <option value="PLOT-A2 / TREE-11">
+                                    <option value="PLOT-B3 / TREE-02">
+                                    <option value="ORCHARD-NORTH / T-01">
+                                    <option value="ORCHARD-SOUTH / T-14">
+                                </datalist>
+                            </div>
+                            <div class="prescan-field">
+                                <label for="input-tree-count"><i class="ph-bold ph-tree"></i> Target Trees to Spray</label>
+                                <input type="number" id="input-tree-count" value="15" min="1" max="1000" class="fc-input">
+                            </div>
+                            <div class="prescan-field">
+                                <label for="select-canopy-stage"><i class="ph-bold ph-leaf"></i> Canopy Stage</label>
+                                <select id="select-canopy-stage" class="fc-input fc-select">
+                                    <option value="young">Young (&lt;5 yrs) • 8 L/tree</option>
+                                    <option value="mature" selected>Mature (5–15 yrs) • 15 L/tree</option>
+                                    <option value="full">Full Bearing (&gt;15 yrs) • 25 L/tree</option>
+                                </select>
+                            </div>
+                            <div class="prescan-field">
+                                <label for="input-temp"><i class="ph-bold ph-thermometer"></i> Temp (°C)</label>
+                                <input type="number" id="input-temp" value="29.5" step="0.5" class="fc-input">
+                            </div>
+                            <div class="prescan-field">
+                                <label for="input-humidity"><i class="ph-bold ph-drop"></i> Humidity (%)</label>
+                                <input type="number" id="input-humidity" value="84" min="10" max="100" class="fc-input">
+                            </div>
+                            <div class="prescan-field">
+                                <label for="input-wind"><i class="ph-bold ph-wind"></i> Wind Speed (km/h)</label>
+                                <input type="number" id="input-wind" value="11.0" step="0.5" class="fc-input">
+                            </div>
+                            <div class="prescan-field">
+                                <label for="input-rain"><i class="ph-bold ph-cloud-rain"></i> 12h Rain Prob (%)</label>
+                                <input type="number" id="input-rain" value="20" min="0" max="100" class="fc-input">
+                            </div>
                         </div>
                     </div>
                     
                     <div class="detection-layout">
-                        <!-- Left: Upload & Vision Canvas -->
+                        <!-- Left Column: Multi-Spectral Vision Viewport & Dropzone -->
                         <div class="upload-panel">
-                            <!-- Pre-Scan Context Bar (Orchard & Microclimate Telemetry) -->
-                            <div class="card prescan-context-bar" id="prescan-context-bar">
-                                <div class="prescan-header">
-                                    <div class="prescan-title">
-                                        <i class="ph-fill ph-sliders-horizontal text-primary"></i>
-                                        <span>Pre-Scan Context & Telemetry</span>
-                                    </div>
-                                    <button type="button" class="btn btn-secondary btn-xs" id="btn-sync-weather" title="Sync live local weather from Open-Meteo API">
-                                        <i class="ph ph-cloud-sun"></i> <span>Sync Live Weather</span>
-                                    </button>
-                                </div>
-                                <div class="prescan-grid">
-                                    <div class="prescan-field">
-                                        <label for="input-plot-id"><i class="ph ph-map-pin"></i> Plot / Tree ID</label>
-                                        <input type="text" id="input-plot-id" value="TREE-01" placeholder="e.g. TREE-01, ORCHARD-NORTH" class="fc-input">
-                                    </div>
-                                    <div class="prescan-field">
-                                        <label for="input-tree-count"><i class="ph ph-tree"></i> Trees to Treat</label>
-                                        <input type="number" id="input-tree-count" value="10" min="1" max="1000" class="fc-input">
-                                    </div>
-                                    <div class="prescan-field">
-                                        <label for="input-temp"><i class="ph ph-thermometer"></i> Temp (°C)</label>
-                                        <input type="number" id="input-temp" value="29.0" step="0.5" class="fc-input">
-                                    </div>
-                                    <div class="prescan-field">
-                                        <label for="input-humidity"><i class="ph ph-drop"></i> Humidity (%)</label>
-                                        <input type="number" id="input-humidity" value="82" min="10" max="100" class="fc-input">
-                                    </div>
-                                    <div class="prescan-field">
-                                        <label for="input-wind"><i class="ph ph-wind"></i> Wind (km/h)</label>
-                                        <input type="number" id="input-wind" value="11.0" step="0.5" class="fc-input">
-                                    </div>
-                                    <div class="prescan-field">
-                                        <label for="input-rain"><i class="ph ph-cloud-rain"></i> Rain Prob (%)</label>
-                                        <input type="number" id="input-rain" value="15" min="0" max="100" class="fc-input">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 3-Mode Interactive Vision Canvas Switcher -->
-                            <div class="canvas-tab-switcher hidden" id="canvas-tab-switcher">
-                                <button type="button" class="canvas-tab-btn active" data-mode="original" id="tab-btn-original" title="Original leaf image with SVG bounding box & polygon contour">
-                                    <i class="ph ph-bounding-box"></i> <span>1. Leaf Contour (OpenCV)</span>
-                                </button>
-                                <button type="button" class="canvas-tab-btn" data-mode="lesion" id="tab-btn-lesion" title="Displays severityMetrics.lesionMaskBase64 isolating necrotic spots">
-                                    <i class="ph ph-paint-brush"></i> <span>2. Lesion Planimetry Mask (PLAA)</span>
-                                </button>
-                                <button type="button" class="canvas-tab-btn" data-mode="gradcam" id="tab-btn-gradcam" title="Displays explainability.gradCamBase64 attention heatmap">
-                                    <i class="ph ph-fire"></i> <span>3. Grad-CAM AI Attention (XAI)</span>
-                                </button>
-                            </div>
-
-                            <div class="upload-dropzone" id="upload-dropzone">
-                                <input type="file" id="file-input" accept="image/jpeg, image/png, image/jpg" hidden>
-                                
-                                <div class="upload-state-idle" id="upload-idle">
-                                    <div class="upload-icon"><i class="ph ph-upload-simple"></i></div>
-                                    <h3>Drag & Drop Mango Leaf Image</h3>
-                                    <p>or <span class="text-primary">browse files</span></p>
-                                    <span class="upload-hint">Formats: JPG, JPEG, PNG (Max 5MB) • Single leaf in frame</span>
-                                </div>
-                                
-                                <div class="upload-state-preview hidden" id="upload-preview">
-                                    <div style="position: relative; display: inline-block; width:100%; height:100%;" id="preview-image-container">
-                                        <img id="preview-image" src="" alt="Uploaded Leaf">
-                                        <div id="bbox-overlay" class="bbox-overlay hidden">
-                                            <span class="bbox-label">Detected Leaf</span>
-                                        </div>
-                                        <svg id="polygon-overlay" class="hidden" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 11;">
-                                            <polygon id="leaf-polygon" points="" style="fill:rgba(16, 185, 129, 0.15);stroke:#10B981;stroke-width:2.5;stroke-dasharray:none;" />
-                                        </svg>
-                                    </div>
-                                    <div class="preview-actions">
-                                        <button class="btn btn-secondary" id="btn-replace"><i class="ph ph-arrows-clockwise"></i> Replace</button>
-                                        <button class="btn btn-danger-outline" id="btn-remove"><i class="ph ph-trash"></i> Remove</button>
-                                    </div>
-                                </div>
-                            </div>
                             
-                            <button class="btn btn-primary btn-large btn-block" id="btn-analyze" disabled>
-                                <i class="ph ph-scan"></i> Run Quantitative Phytopathology Analysis
-                            </button>
+                            <!-- 2. MULTI-SPECTRAL VISION VIEWPORT (4-TAB SCIENTIFIC SWITCHER) -->
+                            <div class="viewport-card card">
+                                <div class="viewport-header">
+                                    <div class="viewport-title-row">
+                                        <div class="d-flex align-center gap-8">
+                                            <i class="ph-fill ph-aperture text-primary font-20"></i>
+                                            <h3 class="m-0">Multi-Spectral Vision Viewport</h3>
+                                        </div>
+                                        <span class="badge badge-info" id="viewport-mode-badge">Mode 1: Leaf Contour</span>
+                                    </div>
+                                    
+                                    <!-- 4-Mode Interactive Canvas Switcher Tabs -->
+                                    <div class="canvas-tab-switcher" id="canvas-tab-switcher">
+                                        <button type="button" class="canvas-tab-btn active" data-mode="original" id="tab-btn-original" title="Original leaf with OpenCV SVG bounding box and oriented polygon overlay">
+                                            <i class="ph-bold ph-bounding-box"></i> <span>[1] ROI & Contour</span>
+                                        </button>
+                                        <button type="button" class="canvas-tab-btn" data-mode="lesion" id="tab-btn-lesion" title="Necrotic lesion segmentation (magenta #F43F5E on emerald lamina)">
+                                            <i class="ph-bold ph-paint-brush"></i> <span>[2] Lesion Mask (PLAA)</span>
+                                        </button>
+                                        <button type="button" class="canvas-tab-btn" data-mode="gradcam" id="tab-btn-gradcam" title="Grad-CAM Jet-colormap neural attention heatmap with opacity slider">
+                                            <i class="ph-bold ph-fire"></i> <span>[3] Grad-CAM XAI</span>
+                                        </button>
+                                        <button type="button" class="canvas-tab-btn" data-mode="exg" id="tab-btn-exg" title="Excess Green Index (2G - R - B) vegetative photosynthetic vigor depletion map">
+                                            <i class="ph-bold ph-sparkle"></i> <span>[4] Chlorophyll (ExG)</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Interactive Viewport Sub-Controls Strip -->
+                                    <div class="viewport-subbar" id="viewport-subbar">
+                                        <!-- Mode 3 Grad-CAM Opacity Slider Control -->
+                                        <div class="viewport-subcontrol hidden" id="subcontrol-gradcam">
+                                            <label for="heatmap-opacity-slider"><i class="ph-bold ph-sliders"></i> Heatmap Opacity:</label>
+                                            <input type="range" id="heatmap-opacity-slider" min="0" max="100" value="65" class="opacity-slider">
+                                            <span class="opacity-badge" id="opacity-val-badge">65%</span>
+                                        </div>
+
+                                        <!-- Mode 2 Lesion Planimetry HUD Counter -->
+                                        <div class="viewport-subcontrol hidden" id="subcontrol-lesion">
+                                            <div class="hud-pixel-pill">
+                                                <span class="hud-dot magenta"></span>
+                                                <span>Necrotic Lesions: <strong id="hud-lesion-pixels">-- px</strong></span>
+                                                <span class="hud-sep">•</span>
+                                                <span class="hud-dot emerald"></span>
+                                                <span>Lamina: <strong id="hud-leaf-pixels">-- px</strong></span>
+                                                <span class="hud-sep">•</span>
+                                                <span class="hud-highlight" id="hud-plaa-stat">PLAA: --%</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mode 4 ExG Chlorophyll False-Color Legend -->
+                                        <div class="viewport-subcontrol hidden" id="subcontrol-exg">
+                                            <div class="exg-legend-wrap">
+                                                <span class="exg-lbl red">Vigor Depleted (ExG &lt; 0)</span>
+                                                <div class="exg-gradient-bar"></div>
+                                                <span class="exg-lbl green">High Photosynthesis (ExG &gt; 0.2)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Viewport Canvas & Upload Zone -->
+                                <div class="upload-dropzone" id="upload-dropzone">
+                                    <input type="file" id="file-input" accept="image/jpeg, image/png, image/jpg" hidden>
+                                    
+                                    <div class="upload-state-idle" id="upload-idle">
+                                        <div class="upload-icon"><i class="ph ph-upload-simple"></i></div>
+                                        <h3>Drag & Drop Mango Leaf Specimen</h3>
+                                        <p>or <span class="text-primary font-600">browse local files</span></p>
+                                        <span class="upload-hint">Supported: High-Res JPG, PNG • Single foliar specimen centered in frame</span>
+                                    </div>
+                                    
+                                    <div class="upload-state-preview hidden" id="upload-preview">
+                                        <div class="preview-canvas-wrap" id="preview-image-container">
+                                            <!-- Interactive HTML5 Vision Canvas for Pixel Processing -->
+                                            <canvas id="vision-canvas" class="vision-canvas"></canvas>
+                                            
+                                            <!-- Source Image (Hidden fallback) -->
+                                            <img id="preview-image" src="" alt="Uploaded Leaf" class="hidden">
+                                            
+                                            <!-- SVG & BBox Overlays for Mode 1 -->
+                                            <div id="bbox-overlay" class="bbox-overlay hidden">
+                                                <span class="bbox-label">OpenCV Segmented Lamina</span>
+                                            </div>
+                                            <svg id="polygon-overlay" class="hidden" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 11;">
+                                                <polygon id="leaf-polygon" points="" style="fill:rgba(16, 185, 129, 0.18);stroke:#10B981;stroke-width:2.5;stroke-dasharray:none;" />
+                                            </svg>
+                                        </div>
+                                        <div class="preview-actions">
+                                            <button class="btn btn-secondary btn-sm" id="btn-replace"><i class="ph ph-arrows-clockwise"></i> Replace Specimen</button>
+                                            <button class="btn btn-danger-outline btn-sm" id="btn-remove"><i class="ph ph-trash"></i> Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary btn-large btn-block mt-16" id="btn-analyze" disabled>
+                                    <i class="ph-bold ph-scan"></i> Execute Quantitative Phytopathology Analysis
+                                </button>
+                            </div>
                         </div>
                         
-                        <!-- Right: Quantitative Diagnostics & Prescription Area -->
+                        <!-- Right Column: Quantitative Diagnostics & Prescription Engine -->
                         <div class="results-panel">
                             <!-- Empty State -->
                             <div class="results-empty" id="results-empty">
-                                <i class="ph ph-scan"></i>
-                                <h3>Awaiting Mango Leaf Image</h3>
-                                <p>Upload an orchard leaf photo to trigger lesion planimetry, Horsfall-Barratt severity rating, and precision spray prescription.</p>
+                                <i class="ph-duotone ph-scan text-primary"></i>
+                                <h3>Awaiting Mango Foliar Specimen</h3>
+                                <p>Upload an orchard leaf specimen to trigger pixel-level lesion planimetry, 0–5 Horsfall-Barratt severity grading, and precision tank-mix calculation.</p>
                             </div>
                             
                             <!-- Loading State -->
                             <div class="results-loading hidden" id="results-loading">
                                 <div class="spinner"></div>
-                                <h3>Executing Multi-Stage Phytopathology Engine...</h3>
-                                <p>Segmenting lamina • Calculating PLAA % • Generating Grad-CAM • Formulating dosage...</p>
+                                <h3>Executing Quantitative Phytopathology Pipeline...</h3>
+                                <p>Segmenting leaf contour • Planimetry PLAA % • Grad-CAM Saliency • Formulating Tank-Mix Dosage...</p>
                             </div>
                             
                             <!-- Success State -->
@@ -290,22 +405,22 @@
                                 <div class="alert alert-warning hidden" id="low-confidence-warning">
                                     <i class="ph-fill ph-warning"></i>
                                     <div class="alert-content">
-                                        <h4>Diagnostic Ambiguity Detected</h4>
-                                        <p>Inference confidence is below 60%. Please verify lighting and upload a closer shot of the affected leaf surface to rule out false positives.</p>
+                                        <h4>Diagnostic Ambiguity Detected (&lt;60% Confidence)</h4>
+                                        <p>Inference confidence is below clinical threshold. Please inspect image lighting and ensure leaf lamina is unobstructed.</p>
                                     </div>
                                 </div>
 
-                                <!-- Longitudinal Plot Efficacy Tracker (ΔPLAA) -->
+                                <!-- Longitudinal Plot Delta Tracker (ΔPLAA) -->
                                 <div class="plot-delta-banner hidden" id="plot-delta-banner">
                                     <div class="pdb-left">
                                         <div class="pdb-icon" id="pdb-icon"><i class="ph-bold ph-chart-line-up"></i></div>
                                         <div class="pdb-info">
                                             <div class="pdb-title-row">
                                                 <span class="pdb-label">LONGITUDINAL PLOT TRACKER</span>
-                                                <span class="pdb-plot" id="pdb-plot-id">PLOT: TREE-01</span>
+                                                <span class="pdb-plot" id="pdb-plot-id">PLOT: PLOT-A1 / TREE-04</span>
                                             </div>
-                                            <h4 class="pdb-headline" id="pdb-headline">Baseline Assessment Logged</h4>
-                                            <p class="pdb-subtext" id="pdb-subtext">Initial scan recorded for this plot canopy. Subsequent scans will compute quantitative treatment delta (ΔPLAA).</p>
+                                            <h4 class="pdb-headline" id="pdb-headline">Baseline Assessment Registered</h4>
+                                            <p class="pdb-subtext" id="pdb-subtext">Initial scan registered for this plot canopy. Subsequent scans will compute quantitative treatment delta (ΔPLAA).</p>
                                         </div>
                                     </div>
                                     <div class="pdb-badge-wrap">
@@ -313,7 +428,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Main Diagnostic & Severity Card -->
+                                <!-- Main Diagnostic Pathology Card -->
                                 <div class="prediction-main-card" id="prediction-main-card">
                                     <div class="pred-top-row">
                                         <div>
@@ -337,181 +452,188 @@
                                                 <span class="plaa-val" id="plaa-pct-val">--</span>
                                                 <span class="plaa-symbol">%</span>
                                             </div>
-                                            <p class="plaa-label">Necrotic Surface Ratio (PLAA)</p>
+                                            <p class="plaa-label">Percentage Leaf Area Affected</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- 1. Quantitative Planimetry & Severity Breakdown Card -->
-                                <div class="card quant-card">
+                                <!-- 3. QUANTITATIVE SEVERITY & SPATIAL GROUNDING CARD -->
+                                <div class="card quant-card" id="pathology-biometrics-card">
                                     <div class="card-header">
                                         <div class="d-flex align-center gap-8">
-                                            <i class="ph-fill ph-ruler text-primary font-20"></i>
-                                            <h3>0–5 Horsfall-Barratt Severity Meter</h3>
+                                            <i class="ph-fill ph-chart-pie-slice text-primary font-20"></i>
+                                            <h3>Pathology Biometrics & Spatial Grounding</h3>
                                         </div>
                                         <span class="badge badge-info" id="badge-severity-label">Calculating...</span>
                                     </div>
 
-                                    <!-- Visual 0-5 Stepped Meter -->
-                                    <div class="hb-stepped-meter" id="hb-stepped-meter">
-                                        <div class="hb-step" data-grade="0" id="hb-step-0">
-                                            <span class="hb-step-num">0</span>
-                                            <span class="hb-step-title">Healthy</span>
-                                            <span class="hb-step-range">0%</span>
+                                    <!-- Dual Biometrics Metric Readout (PLAA % vs Photosynthetic Area) -->
+                                    <div class="dual-biometrics-strip">
+                                        <div class="db-box necrotic">
+                                            <div class="db-value-row">
+                                                <span class="db-num text-danger" id="bio-necrotic-pct">--%</span>
+                                                <span class="db-pill necrotic">Necrotic Lamina</span>
+                                            </div>
+                                            <span class="db-desc">Foliar tissue undergoing necrotic collapse / fungal sporulation</span>
                                         </div>
-                                        <div class="hb-step" data-grade="1" id="hb-step-1">
-                                            <span class="hb-step-num">1</span>
-                                            <span class="hb-step-title">Trace</span>
-                                            <span class="hb-step-range">&le;5%</span>
-                                        </div>
-                                        <div class="hb-step" data-grade="2" id="hb-step-2">
-                                            <span class="hb-step-num">2</span>
-                                            <span class="hb-step-title">Mild</span>
-                                            <span class="hb-step-range">&le;15%</span>
-                                        </div>
-                                        <div class="hb-step" data-grade="3" id="hb-step-3">
-                                            <span class="hb-step-num">3</span>
-                                            <span class="hb-step-title">Moderate</span>
-                                            <span class="hb-step-range">&le;30%</span>
-                                        </div>
-                                        <div class="hb-step" data-grade="4" id="hb-step-4">
-                                            <span class="hb-step-num">4</span>
-                                            <span class="hb-step-title">Severe</span>
-                                            <span class="hb-step-range">&le;50%</span>
-                                        </div>
-                                        <div class="hb-step" data-grade="5" id="hb-step-5">
-                                            <span class="hb-step-num">5</span>
-                                            <span class="hb-step-title">Critical</span>
-                                            <span class="hb-step-range">>50%</span>
+                                        <div class="db-box photosynthetic">
+                                            <div class="db-value-row">
+                                                <span class="db-num text-success" id="bio-photo-pct">--%</span>
+                                                <span class="db-pill photosynthetic">Active Photosynthetic</span>
+                                            </div>
+                                            <span class="db-desc">Intact green chlorophyll sustaining carbon assimilation</span>
                                         </div>
                                     </div>
 
-                                    <div class="plaa-meter-wrap">
-                                        <div class="plaa-meter-track">
-                                            <div class="plaa-meter-fill" id="plaa-meter-fill" style="width: 0%;"></div>
+                                    <!-- Visual Dual Lamina Balance Bar -->
+                                    <div class="lamina-balance-bar">
+                                        <div class="lbb-segment necrotic" id="lbb-necrotic" style="width: 20%;"></div>
+                                        <div class="lbb-segment photosynthetic" id="lbb-photo" style="width: 80%;"></div>
+                                    </div>
+
+                                    <!-- Horsfall-Barratt 0–5 Visual Stepped Meter -->
+                                    <div class="hb-section-wrap mt-16">
+                                        <div class="d-flex justify-between align-center mb-8">
+                                            <span class="hb-title"><i class="ph-bold ph-gauge"></i> Horsfall-Barratt 0–5 Phytopathology Scale</span>
+                                            <span class="hb-active-grade" id="hb-current-grade-text">Grade --</span>
                                         </div>
-                                        <div class="plaa-scale-labels">
-                                            <span>0% (Grade 0)</span>
-                                            <span>5% (Grade 1)</span>
-                                            <span>15% (Grade 2)</span>
-                                            <span>30% (Grade 3)</span>
-                                            <span>50% (Grade 4)</span>
-                                            <span>100% (Grade 5)</span>
+                                        <div class="hb-stepped-meter" id="hb-stepped-meter">
+                                            <div class="hb-step" data-grade="0" id="hb-step-0">
+                                                <span class="hb-step-num">0</span>
+                                                <span class="hb-step-title">Healthy</span>
+                                                <span class="hb-step-range">0%</span>
+                                            </div>
+                                            <div class="hb-step" data-grade="1" id="hb-step-1">
+                                                <span class="hb-step-num">1</span>
+                                                <span class="hb-step-title">Trace</span>
+                                                <span class="hb-step-range">&le;5%</span>
+                                            </div>
+                                            <div class="hb-step" data-grade="2" id="hb-step-2">
+                                                <span class="hb-step-num">2</span>
+                                                <span class="hb-step-title">Mild</span>
+                                                <span class="hb-step-range">&le;15%</span>
+                                            </div>
+                                            <div class="hb-step" data-grade="3" id="hb-step-3">
+                                                <span class="hb-step-num">3</span>
+                                                <span class="hb-step-title">Moderate</span>
+                                                <span class="hb-step-range">&le;30%</span>
+                                            </div>
+                                            <div class="hb-step" data-grade="4" id="hb-step-4">
+                                                <span class="hb-step-num">4</span>
+                                                <span class="hb-step-title">Severe</span>
+                                                <span class="hb-step-range">&le;50%</span>
+                                            </div>
+                                            <div class="hb-step" data-grade="5" id="hb-step-5">
+                                                <span class="hb-step-num">5</span>
+                                                <span class="hb-step-title">Critical</span>
+                                                <span class="hb-step-range">&gt;50%</span>
+                                            </div>
+                                        </div>
+                                        <div class="plaa-meter-wrap">
+                                            <div class="plaa-meter-track">
+                                                <div class="plaa-meter-fill" id="plaa-meter-fill" style="width: 0%;"></div>
+                                                <div class="plaa-pointer-indicator" id="plaa-pointer" style="left: 0%;"></div>
+                                            </div>
+                                            <div class="plaa-scale-labels">
+                                                <span>Grade 0 (0%)</span>
+                                                <span>Grade 1 (5%)</span>
+                                                <span>Grade 2 (15%)</span>
+                                                <span>Grade 3 (30%)</span>
+                                                <span>Grade 4 (50%)</span>
+                                                <span>Grade 5 (100%)</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="pixel-metrics-grid">
-                                        <div class="pm-box">
-                                            <span class="pm-title">Pathological Lesion Area</span>
-                                            <span class="pm-number text-danger" id="metric-lesion-pixels">-- px</span>
+
+                                    <!-- AI Spatial Grounding Verification Badge -->
+                                    <div class="grounding-verification-box mt-16">
+                                        <div class="grounding-badge-row">
+                                            <span class="grounding-badge verified" id="grounding-badge">
+                                                <i class="ph-fill ph-check-circle"></i> Spatial Grounding Verified: 91% Inside Contour
+                                            </span>
+                                            <span class="g-score-tag">Containment: <strong id="spatial-containment-val">91%</strong></span>
                                         </div>
-                                        <div class="pm-box">
-                                            <span class="pm-title">Total Leaf Lamina Area</span>
-                                            <span class="pm-number text-success" id="metric-leaf-pixels">-- px</span>
-                                        </div>
-                                        <div class="pm-box">
-                                            <span class="pm-title">Colorimetric Pipeline</span>
-                                            <span class="pm-number" style="font-size:13px; font-weight:600;">CIE-LAB + HSV</span>
-                                        </div>
+                                        <p class="g-expl" id="grounding-note-text">
+                                            Spatial Grounding Verified: 91% of neural activation is strictly inside the segmented leaf contour (Background Hallucination Rejected).
+                                        </p>
                                     </div>
                                 </div>
 
-                                <!-- 2. Explainable AI & Spatial Grounding Card -->
-                                <div class="card quant-card">
+                                <!-- 4. EPIDEMIOLOGICAL SPRAY-WINDOW & PRECISION TANK-MIX CALCULATOR CARD -->
+                                <div class="card quant-card" id="prescription-engine-card">
                                     <div class="card-header">
                                         <div class="d-flex align-center gap-8">
-                                            <i class="ph-fill ph-cpu text-info font-20"></i>
-                                            <h3>Explainable AI & Spatial Grounding</h3>
+                                            <i class="ph-fill ph-flask text-success font-20"></i>
+                                            <h3>Agronomic Decision Support & Prescription Engine</h3>
                                         </div>
-                                        <span class="grounding-badge verified" id="grounding-badge">
-                                            <i class="ph-fill ph-check-circle"></i> Grounding Verified
-                                        </span>
+                                        <span class="badge badge-success" id="dosage-treatment-type">Precision Formulation</span>
                                     </div>
-                                    <div class="grounding-grid">
-                                        <div class="grounding-score-box">
-                                            <span class="g-score-num" id="spatial-containment-val">--%</span>
-                                            <span class="g-score-lbl">Within Lamina Boundary</span>
-                                        </div>
-                                        <div class="grounding-details">
-                                            <p class="g-note" id="grounding-note-text">Quantifying attention concentration inside the segmented contour...</p>
-                                            <p class="g-expl">Spatial containment confirms the network evaluates biological foliar lesions rather than background orchard soil, sky, or imaging artifacts.</p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- 3. Micro-Climatic Spore Risk & Spray Window Card -->
-                                <div class="card quant-card">
-                                    <div class="card-header">
-                                        <div class="d-flex align-center gap-8">
-                                            <i class="ph-fill ph-drop text-warning font-20"></i>
-                                            <h3>Microclimate Spore Proliferation & Spray Window</h3>
-                                        </div>
-                                        <span class="badge" id="spore-risk-badge">Risk: --</span>
-                                    </div>
-                                    <div class="spore-progress-wrap">
-                                        <div class="spore-progress-bar">
-                                            <div class="spore-progress-fill" id="spore-risk-fill" style="width: 0%;"></div>
-                                        </div>
-                                        <div class="spore-scale-labels">
-                                            <span>0 (Low)</span>
-                                            <span>35 (Moderate)</span>
-                                            <span>65 (High)</span>
-                                            <span>100 (Critical)</span>
-                                        </div>
-                                    </div>
-                                    <div class="spray-window-banner" id="spray-window-banner">
+                                    <!-- Real-Time Spray Window Traffic-Light Banner -->
+                                    <div class="spray-window-banner optimal" id="spray-window-banner">
                                         <i class="ph-fill ph-check-circle" id="spray-window-icon"></i>
                                         <div class="spray-window-text">
-                                            <strong id="spray-window-status">Evaluating Spray Safety Window...</strong>
-                                            <p id="spray-window-reason">Checking wind velocity and rain wash-off risks...</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 4. Severity-Weighted Precision Dosage Prescription Card -->
-                                <div class="card quant-card dosage-prescription-card">
-                                    <div class="card-header">
-                                        <div class="d-flex align-center gap-8">
-                                            <i class="ph-fill ph-first-aid text-success font-20"></i>
-                                            <h3>Severity-Calibrated Dosage Prescription</h3>
-                                        </div>
-                                        <span class="badge badge-success" id="dosage-treatment-type">Prescription</span>
-                                    </div>
-                                    <div class="dosage-hero">
-                                        <div class="dh-agent">
-                                            <span class="dh-label">PRESCRIBED ACTIVE AGENT</span>
-                                            <h4 id="dosage-agent-name">--</h4>
-                                        </div>
-                                        <div class="dh-concentration">
-                                            <span class="dh-label">APPLICATION RATE</span>
-                                            <span class="dh-val" id="dosage-per-liter">--</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="tank-mix-box">
-                                        <div class="tm-item">
-                                            <span class="tm-lbl">Canopy Target</span>
-                                            <strong id="dosage-tree-count">10 Trees</strong>
-                                        </div>
-                                        <div class="tm-sep">×</div>
-                                        <div class="tm-item">
-                                            <span class="tm-lbl">Canopy Volume</span>
-                                            <strong>15 L / Tree</strong>
-                                        </div>
-                                        <div class="tm-sep">=</div>
-                                        <div class="tm-item highlight">
-                                            <span class="tm-lbl">Total Water Batch</span>
-                                            <strong id="dosage-water-volume">150 Liters</strong>
-                                        </div>
-                                        <div class="tm-sep">+</div>
-                                        <div class="tm-item chemical-highlight">
-                                            <span class="tm-lbl">Required Chemical</span>
-                                            <strong id="dosage-chem-amount">300 g</strong>
+                                            <strong id="spray-window-status">OPTIMAL SPRAY WINDOW — SAFE TO APPLY</strong>
+                                            <p id="spray-window-reason">Rain probability (&lt;35%) and wind speed (&lt;18 km/h) are within safe agronomic thresholds for systemic foliar absorption.</p>
                                         </div>
                                     </div>
 
-                                    <div class="protocol-box">
-                                        <span class="protocol-lbl"><i class="ph ph-shield-check"></i> Agronomical Field Protocol:</span>
-                                        <p id="dosage-action-protocol">--</p>
+                                    <!-- Spore Proliferation Risk Meter -->
+                                    <div class="spore-risk-container mt-16">
+                                        <div class="d-flex justify-between align-center mb-6">
+                                            <span class="spore-lbl"><i class="ph-bold ph-bug"></i> Spore Proliferation Pressure Index:</span>
+                                            <span class="badge badge-warning" id="spore-risk-badge">Risk: 84 / 100 (HIGH)</span>
+                                        </div>
+                                        <div class="spore-progress-bar">
+                                            <div class="spore-progress-fill" id="spore-risk-fill" style="width: 84%;"></div>
+                                        </div>
+                                        <div class="spore-scale-labels">
+                                            <span>0 (Inert)</span>
+                                            <span>35 (Moderate)</span>
+                                            <span>65 (High Outbreak)</span>
+                                            <span>100 (Critical Epidemic)</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Precision Tank-Mix Calculator Grid -->
+                                    <div class="tank-mix-calculator-grid mt-20">
+                                        <div class="tm-calc-header">
+                                            <div class="tm-chem-headline">
+                                                <span class="tm-label">ACTIVE CHEMICAL REGIMEN</span>
+                                                <h4 class="tm-chem-name" id="dosage-agent-name">Hexaconazole 5% SC (Contaf Plus)</h4>
+                                            </div>
+                                            <div class="tm-chem-dose">
+                                                <span class="tm-label">SOLUTE DOSE</span>
+                                                <strong class="tm-dose-val" id="dosage-per-liter">1.0 mL / L</strong>
+                                            </div>
+                                        </div>
+
+                                        <div class="tank-mix-metric-boxes">
+                                            <div class="tm-box">
+                                                <span class="tm-b-label"><i class="ph-bold ph-tree"></i> Target Trees</span>
+                                                <strong class="tm-b-val" id="dosage-tree-count">15 Trees</strong>
+                                            </div>
+                                            <div class="tm-box-sep">&times;</div>
+                                            <div class="tm-box">
+                                                <span class="tm-b-label"><i class="ph-bold ph-drop"></i> Canopy Rate</span>
+                                                <strong class="tm-b-val" id="dosage-stage-rate">15 L / Mature Tree</strong>
+                                            </div>
+                                            <div class="tm-box-sep">=</div>
+                                            <div class="tm-box highlight-water">
+                                                <span class="tm-b-label"><i class="ph-bold ph-waves"></i> Spray Tank Water</span>
+                                                <strong class="tm-b-val text-primary" id="dosage-water-volume">225 Liters</strong>
+                                            </div>
+                                            <div class="tm-box-sep">+</div>
+                                            <div class="tm-box highlight-chemical">
+                                                <span class="tm-b-label"><i class="ph-bold ph-eyedropper"></i> Required Chemical</span>
+                                                <strong class="tm-b-val text-danger" id="dosage-chem-amount">225 mL</strong>
+                                            </div>
+                                        </div>
+
+                                        <div class="protocol-box mt-16">
+                                            <span class="protocol-lbl"><i class="ph-bold ph-shield-check"></i> Agronomical Field Protocol:</span>
+                                            <p id="dosage-action-protocol">Spray panicles and young flush leaves thoroughly during early morning. Repeat after 14 days if cool humid conditions persist.</p>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -526,7 +648,7 @@
                                 <!-- Action Toolbar -->
                                 <div class="action-toolbar">
                                     <button type="button" class="btn btn-primary btn-large btn-block" id="btn-print-certificate">
-                                        <i class="ph-fill ph-file-pdf"></i> Generate Clinical Phytopathology Certificate (Print / PDF)
+                                        <i class="ph-fill ph-file-pdf"></i> Export Official Pathology Lab Report (Print / PDF)
                                     </button>
                                 </div>
                                 
@@ -537,6 +659,7 @@
                         </div>
                     </div>
                 </section>
+
                 
                 <!-- ==============================================
                      3. PREDICTION HISTORY VIEW

@@ -362,18 +362,18 @@ def compute_explainability(img_bgr, bbox, polygon, top_prediction, tf_model=None
             "groundingNote": "88% of neural attention is strictly grounded inside the leaf lamina."
         }
 
-def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=None, user_humidity=None, user_wind=None, user_rain_prob=None, tree_count=10, plot_id="PLOT-A1"):
+def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=None, user_humidity=None, user_wind=None, user_rain_prob=None, tree_count=15, plot_id="PLOT-A1 / TREE-04", canopy_stage="mature"):
     """
     3. Micro-Climatic Spore Risk, Safe Spray-Window & Precision Dosage Engine:
     Integrates real-time/forecast weather factors with phytopathological spore proliferation models,
     evaluates spray safety windows, and computes tree-canopy calibrated fungicide prescriptions.
     """
     # 1. Base default parameters
-    temp = float(user_temp if user_temp is not None else 29.0)
-    humidity = float(user_humidity if user_humidity is not None else 82.0)
+    temp = float(user_temp if user_temp is not None else 29.5)
+    humidity = float(user_humidity if user_humidity is not None else 84.0)
     wind = float(user_wind if user_wind is not None else 11.0)
-    rain_prob = float(user_rain_prob if user_rain_prob is not None else 15.0)
-    trees = max(1, int(tree_count if tree_count is not None else 10))
+    rain_prob = float(user_rain_prob if user_rain_prob is not None else 20.0)
+    trees = max(1, int(tree_count if tree_count is not None else 15))
 
     # Optional Live Weather Fetch from Open-Meteo (1.5-second timeout, fail-safe)
     if user_temp is None or user_humidity is None or user_wind is None:
@@ -426,22 +426,29 @@ def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=No
         risk_level = "CRITICAL"
 
     # 3. Safe Spray Window Evaluation
-    if rain_prob >= 40.0:
-        spray_status = "HOLD SPRAY — RAIN WASH-OFF RISK"
+    if rain_prob >= 35.0:
+        spray_status = "HOLD CHEMICAL SPRAY — WASH-OFF HAZARD"
         spray_safe = False
-        spray_reason = f"Rain probability ({int(rain_prob)}%) poses severe risk of chemical wash-off before foliar absorption. Delay spraying."
+        spray_reason = f"Rain probability ({int(rain_prob)}%) exceeds safe threshold (<35%). High risk of foliar wash-off before systemic uptake."
     elif wind >= 18.0:
-        spray_status = "HOLD SPRAY — WIND DRIFT HAZARD"
+        spray_status = "HOLD CHEMICAL SPRAY — DRIFT HAZARD"
         spray_safe = False
-        spray_reason = f"Elevated wind velocity ({wind} km/h) exceeds safe threshold (<15 km/h) causing droplet drift and off-target pesticide loss."
+        spray_reason = f"Wind velocity ({wind} km/h) exceeds safe threshold (<18 km/h). Severe droplet drift hazard to non-target canopy."
     else:
-        spray_status = "OPTIMAL SPRAY WINDOW"
+        spray_status = "OPTIMAL SPRAY WINDOW — SAFE TO APPLY"
         spray_safe = True
-        spray_reason = "Atmospheric wind and precipitation parameters are optimal for foliar penetration and minimal droplet drift."
+        spray_reason = "Atmospheric wind (<18 km/h) and precipitation (<35%) are optimal for foliar penetration and minimal droplet drift."
 
     # 4. Severity-Weighted Precision Dosage Prescription
-    # 15 Liters of spray mixture per mature mango tree canopy
-    total_water_liters = trees * 15
+    # Water volume based on canopy stage
+    stage_key = str(canopy_stage).lower() if canopy_stage else 'mature'
+    stage_rate_map = {
+        'young': 8,
+        'mature': 15,
+        'full': 25
+    }
+    liters_per_tree = stage_rate_map.get(stage_key, 15)
+    total_water_liters = trees * liters_per_tree
 
     if "anthracnose" in pred:
         if severity_grade <= 1:
@@ -531,6 +538,8 @@ def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=No
             "agentName": agent,
             "treatmentType": t_type,
             "dosePerLiter": dose,
+            "canopyStage": canopy_stage,
+            "litersPerTree": liters_per_tree,
             "treeCount": trees,
             "totalWaterLiters": total_water_liters,
             "totalChemicalAmount": chem_amt,
@@ -656,8 +665,9 @@ def predict():
             user_humidity = request.form.get('humidity', type=float) or request.args.get('humidity', type=float)
             user_wind = request.form.get('wind', type=float) or request.args.get('wind', type=float)
             user_rain_prob = request.form.get('rain_prob', type=float) or request.args.get('rain_prob', type=float)
-            tree_count = request.form.get('tree_count', default=10, type=int) or request.args.get('tree_count', default=10, type=int)
-            plot_id = request.form.get('plot_id', default="PLOT-A1", type=str) or request.args.get('plot_id', default="PLOT-A1", type=str)
+            tree_count = request.form.get('tree_count', default=15, type=int) or request.args.get('tree_count', default=15, type=int)
+            plot_id = request.form.get('plot_id', default="PLOT-A1 / TREE-04", type=str) or request.args.get('plot_id', default="PLOT-A1 / TREE-04", type=str)
+            canopy_stage = request.form.get('canopy_stage', default="mature", type=str) or request.args.get('canopy_stage', default="mature", type=str)
 
             # 1. Pixel-Level Lesion Planimetry & Severity Grading
             severity_metrics = compute_plaa_and_severity(img_bgr, bbox, polygon, top_prediction)
@@ -674,7 +684,8 @@ def predict():
                 user_wind,
                 user_rain_prob,
                 tree_count,
-                plot_id
+                plot_id,
+                canopy_stage
             )
 
             # Backward-compatible response + 4 Quantitative Modules

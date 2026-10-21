@@ -384,86 +384,105 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
 .info-section li { margin-bottom: 4px; }
 
 /* ==========================================================================
-   QUANTITATIVE PHYTOPATHOLOGY & DECISION SUPPORT STYLES
+   AGRONOMIC COCKPIT & DASHBOARD STRIP
    ========================================================================== */
-.canvas-tab-switcher {
-    display: flex;
-    gap: 8px;
-    background-color: var(--bg-surface);
-    padding: 6px;
-    border-radius: var(--radius-md);
+.dashboard-orchard-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #FFFFFF, #F8FAFC);
     border: 1px solid var(--border-light);
-    margin-bottom: 12px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
 }
-.canvas-tab-btn {
-    flex: 1;
-    display: inline-flex;
+@media (max-width: 1024px) {
+    .dashboard-orchard-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+    .dashboard-orchard-strip { grid-template-columns: 1fr; }
+}
+.dos-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.dos-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background-color: #ECFDF5;
+    color: var(--primary);
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: var(--radius-sm);
-    color: var(--text-muted);
-    background: transparent;
-    transition: var(--transition-fast);
+    font-size: 22px;
+    flex-shrink: 0;
 }
-.canvas-tab-btn i { font-size: 16px; }
-.canvas-tab-btn:hover { color: var(--primary); background-color: var(--bg-hover); }
-.canvas-tab-btn.active {
-    background-color: var(--primary);
-    color: white;
-    box-shadow: var(--shadow-sm);
+.dos-icon.weather { background-color: #EFF6FF; color: #2563EB; }
+.dos-icon.safe { background-color: #D1FAE5; color: #059669; }
+.dos-icon.warning { background-color: #FEF3C7; color: #D97706; }
+.dos-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+.dos-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.dos-val {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ==========================================================================
-   PRE-SCAN CONTEXT BAR & TELEMETRY
+   TOP ORCHARD TELEMETRY & MICRO-CLIMATE CONTROL BAR
    ========================================================================== */
 .prescan-context-bar {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    margin-bottom: 16px;
+    border-radius: var(--radius-lg);
+    padding: 18px 22px;
     box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-normal);
+}
+.prescan-context-bar:hover {
+    box-shadow: var(--shadow-md);
 }
 .prescan-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 .prescan-title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 10px;
+    font-size: 14.5px;
     font-weight: 700;
     color: var(--primary-dark);
 }
-.prescan-title i { font-size: 18px; }
-.btn-xs {
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: var(--radius-sm);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: var(--transition-fast);
-}
 .prescan-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+    grid-template-columns: 1.4fr 1.1fr 1.3fr 1fr 1fr 1fr 1fr;
+    gap: 12px;
 }
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
     .prescan-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     .prescan-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -474,7 +493,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     gap: 4px;
 }
 .prescan-field label {
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -482,6 +501,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
 }
 .prescan-field label i {
     font-size: 13px;
@@ -489,8 +509,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
 }
 .fc-input {
     width: 100%;
-    padding: 7px 10px;
-    border: 1px solid var(--border-light);
+    padding: 8px 12px;
+    border: 1.5px solid var(--border-light);
     border-radius: var(--radius-sm);
     font-family: inherit;
     font-size: 13px;
@@ -498,12 +518,187 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     color: var(--text-main);
     background-color: var(--bg-main);
     outline: none;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: all var(--transition-fast);
 }
 .fc-input:focus {
     border-color: var(--secondary);
     background-color: white;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+.fc-select {
+    cursor: pointer;
+    background-color: var(--bg-main);
+}
+
+/* ==========================================================================
+   MULTI-SPECTRAL VISION VIEWPORT (4-TAB SCIENTIFIC SWITCHER)
+   ========================================================================== */
+.viewport-card {
+    padding: 20px;
+    border-radius: var(--radius-lg);
+}
+.viewport-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.viewport-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.canvas-tab-switcher {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background-color: var(--bg-main);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+@media (max-width: 600px) {
+    .canvas-tab-switcher { grid-template-columns: repeat(2, 1fr); }
+}
+.canvas-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    background: transparent;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    white-space: nowrap;
+}
+.canvas-tab-btn i { font-size: 15px; }
+.canvas-tab-btn:hover {
+    color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+.canvas-tab-btn.active {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 2px 6px rgba(6, 78, 59, 0.25);
+}
+
+/* Viewport Sub-Controls Strip */
+.viewport-subbar {
+    background: linear-gradient(135deg, #F8FAFC, #F1F5F9);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+}
+.viewport-subcontrol {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+.viewport-subcontrol label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.opacity-slider {
+    flex: 1;
+    max-width: 200px;
+    height: 6px;
+    border-radius: 99px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+.opacity-badge {
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 700;
+    background-color: white;
+    border: 1px solid var(--border-light);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--primary-dark);
+}
+
+.hud-pixel-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+.hud-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.hud-dot.magenta { background-color: #F43F5E; box-shadow: 0 0 6px #F43F5E; }
+.hud-dot.emerald { background-color: #10B981; box-shadow: 0 0 6px #10B981; }
+.hud-sep { color: var(--text-light); }
+.hud-highlight {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 11.5px;
+}
+
+.exg-legend-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+.exg-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+.exg-lbl.red { color: #DC2626; }
+.exg-lbl.green { color: #047857; }
+.exg-gradient-bar {
+    flex: 1;
+    height: 8px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #DC2626 0%, #EA580C 25%, #FACC15 50%, #10B981 75%, #047857 100%);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Viewport Canvas Elements */
+.preview-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 380px;
+    max-height: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0A0F1D;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.vision-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
 }
 
 /* ==========================================================================
@@ -667,23 +862,135 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
 }
 
 /* ==========================================================================
-   0-5 HORSFALL-BARRATT STEPPED SEVERITY METER
+   PATHOLOGY BIOMETRICS & SPATIAL GROUNDING CARD
    ========================================================================== */
 .quant-card {
-    padding: 22px;
+    padding: 24px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-light);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm);
 }
 .d-flex { display: flex; }
+.justify-between { justify-content: space-between; }
 .align-center { align-items: center; }
 .gap-8 { gap: 8px; }
 .font-20 { font-size: 20px; }
+.m-0 { margin: 0; }
 
+/* Dual Biometrics Readout (PLAA % vs Active Photosynthetic) */
+.dual-biometrics-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+}
+@media (max-width: 600px) {
+    .dual-biometrics-strip { grid-template-columns: 1fr; }
+}
+.db-box {
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: transform var(--transition-fast);
+}
+.db-box:hover {
+    transform: translateY(-2px);
+}
+.db-box.necrotic {
+    background: linear-gradient(135deg, #FFF1F2, #FFE4E6);
+    border-color: #FECDD3;
+}
+.db-box.photosynthetic {
+    background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+    border-color: #A7F3D0;
+}
+.db-value-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.db-num {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+}
+.db-pill {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 99px;
+}
+.db-pill.necrotic {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+.db-pill.photosynthetic {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+.db-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* Visual Dual Lamina Balance Bar */
+.lamina-balance-bar {
+    display: flex;
+    height: 12px;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 12px;
+    background-color: var(--bg-hover);
+    border: 1px solid var(--border-light);
+}
+.lbb-segment.necrotic {
+    background: linear-gradient(90deg, #F43F5E, #E11D48);
+    transition: width 0.8s ease;
+}
+.lbb-segment.photosynthetic {
+    background: linear-gradient(90deg, #10B981, #059669);
+    transition: width 0.8s ease;
+}
+
+/* Horsfall-Barratt 0-5 Section */
+.hb-section-wrap {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-light);
+}
+.hb-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.hb-active-grade {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary);
+    background-color: rgba(6, 78, 59, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
 .hb-stepped-meter {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 8px;
-    margin: 16px 0 14px;
+    margin: 12px 0 14px;
+}
+@media (max-width: 600px) {
+    .hb-stepped-meter { grid-template-columns: repeat(3, 1fr); }
 }
 .hb-step {
     display: flex;
@@ -765,13 +1072,13 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
 .hb-step[data-grade="5"].active .hb-step-range { color: #FEE2E2; }
 
 .plaa-meter-wrap {
-    margin: 12px 0 18px;
+    margin: 12px 0 16px;
+    position: relative;
 }
 .plaa-meter-track {
     height: 12px;
     background-color: var(--bg-hover);
     border-radius: 99px;
-    overflow: hidden;
     position: relative;
     border: 1px solid var(--border-light);
 }
@@ -780,6 +1087,18 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     border-radius: 99px;
     background: linear-gradient(90deg, #10B981, #F59E0B 40%, #EF4444 80%);
     transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.plaa-pointer-indicator {
+    position: absolute;
+    top: -8px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 9px solid #0F172A;
+    transform: translateX(-50%);
+    transition: left 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 10;
 }
 .plaa-scale-labels {
     display: flex;
@@ -790,34 +1109,27 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     margin-top: 6px;
 }
 
-.pixel-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-.pm-box {
+/* Grounding Verification Box */
+.grounding-verification-box {
     background-color: var(--bg-main);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
     border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
 }
-.pm-title {
-    font-size: 11px;
-    font-weight: 600;
+.grounding-badge-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.g-score-tag {
+    font-size: 12px;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    font-weight: 600;
 }
-.pm-number {
-    font-size: 18px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
+.g-score-tag strong {
+    color: var(--primary-dark);
 }
-
-/* Explainable AI & Grounding */
 .grounding-badge {
     display: inline-flex;
     align-items: center;
@@ -835,66 +1147,90 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     background-color: var(--warning-bg);
     color: var(--warning);
 }
-.grounding-grid {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 20px;
-    align-items: center;
-    background-color: var(--bg-main);
+.g-expl {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ==========================================================================
+   AGRONOMIC PRESCRIPTION ENGINE & SPRAY WINDOW
+   ========================================================================== */
+.spray-window-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
     padding: 16px 20px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid transparent;
+    transition: all var(--transition-fast);
+}
+.spray-window-banner.optimal {
+    background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+    border-color: #10B981;
+    color: #065F46;
+}
+.spray-window-banner.optimal i {
+    font-size: 26px;
+    color: #059669;
+    flex-shrink: 0;
+}
+.spray-window-banner.hold {
+    background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+    border-color: #EF4444;
+    color: #991B1B;
+}
+.spray-window-banner.hold i {
+    font-size: 26px;
+    color: #DC2626;
+    flex-shrink: 0;
+    animation: pulseWarning 1.5s infinite;
+}
+@keyframes pulseWarning {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+.spray-window-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+}
+.spray-window-text p {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.95;
+}
+
+/* Spore Risk Container */
+.spore-risk-container {
+    padding: 14px 18px;
+    background-color: var(--bg-main);
     border-radius: var(--radius-md);
     border: 1px solid var(--border-light);
 }
-.grounding-score-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid var(--border-light);
-    padding-right: 16px;
-}
-.g-score-num {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--primary-dark);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-}
-.g-score-lbl {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    text-align: center;
-    margin-top: 4px;
-}
-.g-note {
-    font-size: 14px;
-    font-weight: 600;
+.spore-lbl {
+    font-size: 12.5px;
+    font-weight: 700;
     color: var(--text-main);
-    margin-bottom: 4px;
-}
-.g-expl {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.5;
-}
-
-/* Microclimate & Spray Window */
-.spore-progress-wrap {
-    margin: 14px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 .spore-progress-bar {
     height: 10px;
-    background-color: var(--bg-hover);
+    background-color: var(--border-light);
     border-radius: 99px;
     overflow: hidden;
-    border: 1px solid var(--border-light);
+    margin-top: 8px;
 }
 .spore-progress-fill {
     height: 100%;
     border-radius: 99px;
-    background: linear-gradient(90deg, #10B981, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, #10B981 0%, #F59E0B 50%, #EF4444 100%);
     transition: width 0.8s ease;
 }
 .spore-scale-labels {
@@ -906,121 +1242,87 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     margin-top: 5px;
 }
 
-.spray-window-banner {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px 18px;
+/* Precision Tank-Mix Calculator Grid */
+.tank-mix-calculator-grid {
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
-    border: 1px solid transparent;
-    transition: var(--transition-fast);
+    overflow: hidden;
+    background: var(--bg-surface);
 }
-.spray-window-banner.optimal {
-    background-color: #ECFDF5;
-    border-color: #A7F3D0;
-    color: #065F46;
-}
-.spray-window-banner.optimal i {
-    font-size: 24px;
-    color: #059669;
-}
-.spray-window-banner.hold {
-    background-color: #FFFBEB;
-    border-color: #FDE68A;
-    color: #92400E;
-}
-.spray-window-banner.hold i {
-    font-size: 24px;
-    color: #D97706;
-}
-.spray-window-text strong {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 2px;
-}
-.spray-window-text p {
-    font-size: 13px;
-    line-height: 1.4;
-    opacity: 0.9;
-}
-
-/* Severity-Calibrated Dosage Card */
-.dosage-prescription-card {
-    background: linear-gradient(180deg, #FFFFFF, #F8FAFC);
-    border: 1px solid #CBD5E1;
-}
-.dosage-hero {
+.tm-calc-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     color: white;
-    padding: 18px 22px;
-    border-radius: var(--radius-md);
-    margin-bottom: 16px;
+    padding: 16px 20px;
 }
-.dh-label {
-    font-size: 10px;
-    font-weight: 700;
+.tm-chem-headline .tm-label,
+.tm-chem-dose .tm-label {
+    font-size: 10.5px;
+    font-weight: 800;
     letter-spacing: 0.08em;
     color: var(--secondary-light);
     text-transform: uppercase;
 }
-.dh-agent h4 {
+.tm-chem-name {
     color: white;
-    font-size: 18px;
-    margin-top: 4px;
+    font-size: 17px;
     font-weight: 700;
+    margin: 3px 0 0;
 }
-.dh-concentration {
-    text-align: right;
-}
-.dh-val {
+.tm-dose-val {
     display: block;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--accent);
     margin-top: 2px;
 }
 
-.tank-mix-box {
+.tank-mix-metric-boxes {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 16px 20px;
     background-color: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 14px 18px;
-    margin-bottom: 16px;
+    gap: 8px;
 }
-.tm-item {
+@media (max-width: 600px) {
+    .tank-mix-metric-boxes {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .tm-box-sep { display: none; }
+}
+.tm-box {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    flex: 1;
 }
-.tm-lbl {
+.tm-b-label {
     font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-}
-.tm-item strong {
-    font-size: 15px;
     font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.tm-b-val {
+    font-size: 16px;
+    font-weight: 800;
     color: var(--text-main);
 }
-.tm-item.highlight strong {
-    color: var(--info);
-    font-size: 16px;
+.highlight-water .tm-b-val {
+    color: #2563EB;
 }
-.tm-item.chemical-highlight strong {
-    color: var(--primary);
-    font-size: 16px;
+.highlight-chemical .tm-b-val {
+    color: #DC2626;
 }
-.tm-sep {
+.tm-box-sep {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-light);
 }
 
@@ -1028,14 +1330,15 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     background-color: #F1F5F9;
     border-left: 4px solid var(--primary);
     padding: 12px 16px;
+    margin: 0 16px 16px;
     border-radius: 4px var(--radius-sm) var(--radius-sm) 4px;
 }
 .protocol-lbl {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 11.5px;
+    font-weight: 800;
     color: var(--primary-dark);
     margin-bottom: 4px;
     text-transform: uppercase;
@@ -1045,10 +1348,11 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     font-size: 13px;
     color: var(--text-main);
     line-height: 1.5;
+    margin: 0;
 }
 
 .action-toolbar {
-    margin-top: 10px;
+    margin-top: 14px;
 }
 
 /* Certificate Modal & Printable Report */
