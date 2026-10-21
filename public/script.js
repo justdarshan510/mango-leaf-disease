@@ -887,12 +887,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const rainProb = inputRain?.value || '20';
 
         try {
-            // Compress image client-side if file > 1.5MB to ensure Vercel 4.5MB payload limit is never exceeded
+            // Compress image client-side only if file > 4.5MB to preserve pristine original leaf pixels
             let uploadBlob = currentFile;
-            if (currentFile.size > 1.5 * 1024 * 1024 && loadedLeafImg.naturalWidth) {
+            if (currentFile.size > 4.5 * 1024 * 1024 && loadedLeafImg.naturalWidth) {
                 uploadBlob = await new Promise((resolve) => {
                     const c = document.createElement('canvas');
-                    const maxDim = 1280;
+                    const maxDim = 1600;
                     let w = loadedLeafImg.naturalWidth;
                     let h = loadedLeafImg.naturalHeight;
                     if (w > maxDim || h > maxDim) {
@@ -901,7 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     c.width = w; c.height = h;
                     c.getContext('2d').drawImage(loadedLeafImg, 0, 0, w, h);
-                    c.toBlob((b) => resolve(b || currentFile), 'image/jpeg', 0.88);
+                    c.toBlob((b) => resolve(b || currentFile), 'image/jpeg', 0.95);
                 });
             }
 
@@ -936,7 +936,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.error || 'Diagnostic inference failed');
             }
         } catch (error) {
-            console.warn('Backend /predict unavailable, executing authentic client-side edge diagnostic from specimen pixels:', error);
+            console.error('Backend /predict failed:', error);
+            alert(`Backend Prediction Service Warning:\n${error.message}\n\nPlease ensure 'app.py' is running with python in 'venv311' on port 5005. Executing fallback diagnostic.`);
             executeClientSideDiagnostic(plotId, treeCount, canopyStage, temp, humidity, wind, rainProb);
         }
     });
@@ -1224,6 +1225,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (predictionConfVal) predictionConfVal.textContent = (data.confidence * 100).toFixed(1);
         if (severityBadgeMain) severityBadgeMain.textContent = `Grade ${sev.severityGrade}`;
         if (plaaPctVal) plaaPctVal.textContent = sev.plaaPercentage.toFixed(1);
+
+        const engineBadge = document.getElementById('prediction-engine-badge');
+        if (engineBadge) {
+            if (data.inferenceEngine) {
+                engineBadge.textContent = data.inferenceEngine;
+                engineBadge.className = data.inferenceEngine.includes("TensorFlow") ? "badge badge-success font-11" : "badge badge-warning font-11";
+            } else {
+                engineBadge.textContent = "MobileNetV2 Deep Learning";
+                engineBadge.className = "badge badge-success font-11";
+            }
+        }
 
         // 4. Dual Biometrics Readout: % Necrotic vs % Active Photosynthetic Area
         const necroticPct = sev.plaaPercentage;
