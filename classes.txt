@@ -1,0 +1,1 @@
+['Anthracnose', 'Die Black', 'Gall Midge', 'Healthy', 'Powdery Mildew']

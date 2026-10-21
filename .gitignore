@@ -1,0 +1,36 @@
+# Virtual Environments
+venv/
+venv311/
+.venv/
+env/
+ENV/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Temporary & debug uploads
+debug_uploads/
+*.tmp
+*.log
+
+# Dataset & raw images (keep repo lightweight, download via preprocess script)
+dataset/
+dataset_cropped/
+
+# Redundant large model checkpoints (>90MB)
+mango_correct_classes_model.keras
+mango_efficientnet_model (1).keras
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
