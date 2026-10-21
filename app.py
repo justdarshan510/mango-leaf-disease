@@ -686,31 +686,22 @@ def predict():
             # Compute leaf bounding box & oriented polygon
             bbox, polygon = get_leaf_bounding_box(image_bytes)
             
-            # Crop to isolated leaf ROI for classification
+            # Preprocess image for 224x224 MobileNetV2 using full image (matching training pipeline)
             pil_img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
-            if bbox is not None:
-                x, y, w, h = bbox
-                pad = 10
-                width, height = pil_img.size
-                x1 = max(0, x - pad)
-                y1 = max(0, y - pad)
-                x2 = min(width, x + w + pad)
-                y2 = min(height, y + h + pad)
-                pil_img = pil_img.crop((x1, y1, x2, y2))
-            
-            # Preprocess image for 224x224 MobileNetV2
-            pil_img = pil_img.resize((224, 224))
-            img_array = np.array(pil_img, dtype=np.float32)
+            pil_img_resized = pil_img.resize((224, 224))
+            img_array = np.array(pil_img_resized, dtype=np.float32)
             img_array = np.expand_dims(img_array, axis=0)
             
             # Inference execution
             confidence_scores = None
+            inference_engine = "OpenCV Colorimetric Classifier"
             if model is not None:
                 try:
                     # Note: local_mango_model.keras embeds preprocess_input as its first layer.
                     # Raw float32 pixel values in range [0.0, 255.0] are required to avoid double-normalization collapse.
                     predictions = model.predict(img_array, verbose=0)
                     confidence_scores = predictions[0].tolist()
+                    inference_engine = "TensorFlow MobileNetV2 (local_mango_model.keras)"
                 except Exception as e:
                     print(f"Model prediction error: {e}")
                     confidence_scores = None
@@ -768,6 +759,8 @@ def predict():
                 "allPredictions": all_predictions,
                 "bbox": bbox,
                 "polygon": polygon,
+                "modelLoaded": model is not None,
+                "inferenceEngine": inference_engine,
                 
                 # New Quantitative Phytopathology & Decision-Support Modules
                 "severityMetrics": severity_metrics,
