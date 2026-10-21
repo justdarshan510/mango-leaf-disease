@@ -8,22 +8,35 @@ import urllib.request
 import numpy as np
 from PIL import Image
 import cv2
-import tensorflow as tf
+
+try:
+    import tensorflow as tf
+    HAS_TF = True
+except (ImportError, Exception):
+    tf = None
+    HAS_TF = False
+
 from flask import Flask, request, jsonify, send_from_directory
 
-app = Flask(__name__, static_url_path='', static_folder='static')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+app = Flask(__name__, static_url_path='', static_folder=STATIC_DIR)
 
 # Global variable for the model
 model = None
-MODEL_PATH = "local_mango_model.keras"
+MODEL_PATH = os.path.join(BASE_DIR, "local_mango_model.keras")
 # Exact classes provided from the training dataset
 CLASS_NAMES = ['Anthracnose', 'Die Black', 'Gall Midge', 'Healthy', 'Powdery Mildew']
 
 def load_keras_model():
     global model
+    if not HAS_TF or tf is None:
+        print("TensorFlow not installed in current environment; using mathematical planimetry & colorimetric diagnostic engine.")
+        return
     try:
-        model = tf.keras.models.load_model(MODEL_PATH)
-        print("Model loaded successfully.")
+        if os.path.exists(MODEL_PATH):
+            model = tf.keras.models.load_model(MODEL_PATH)
+            print("Model loaded successfully.")
     except Exception as e:
         print(f"Failed to load model: {e}")
         print("Continuing with deterministic fallback inference for UI demonstration purposes.")
@@ -249,7 +262,7 @@ def compute_explainability(img_bgr, bbox, polygon, top_prediction, tf_model=None
             mask[:, :] = 255
 
         # Attempt Grad-CAM with tf.GradientTape
-        if tf_model is not None and img_tensor is not None:
+        if HAS_TF and tf is not None and tf_model is not None and img_tensor is not None:
             try:
                 base_submodel = None
                 for l in tf_model.layers:

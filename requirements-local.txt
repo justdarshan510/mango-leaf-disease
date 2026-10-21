@@ -1,0 +1,6 @@
+# Full local requirements including TensorFlow for training and deep learning models
+Flask>=3.0.0
+Pillow>=10.0.0
+numpy>=1.26.0
+opencv-python-headless>=4.9.0
+tensorflow==2.15.0
