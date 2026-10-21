@@ -1544,7 +1544,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Anthracnose": {
             name: "Anthracnose",
             severity: "High",
-            img: "https://images.unsplash.com/photo-1622396481328-9b1b78c772c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60", // Placeholder
+            img: "images/anthracnose.jpg",
             shortDesc: "A fungal disease causing dark, sunken lesions on leaves, stems, and fruits.",
             symptoms: ["Dark, irregular spots on leaves", "Shot-hole appearance as dead tissue drops out", "Blossom blight and fruit drop"],
             causes: "Caused by the fungus Colletotrichum gloeosporioides. Thrives in high humidity and warm temperatures.",
@@ -1553,7 +1553,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Die Black": {
             name: "Die Black",
             severity: "High",
-            img: "https://images.unsplash.com/photo-1587334208034-7a09c2794eb8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60", // Placeholder
+            img: "images/die_black.jpg",
             shortDesc: "Progressive death of twigs and branches starting from the tips, moving downward.",
             symptoms: ["Browning and dying of twigs from tip downwards", "Leaves dry up but remain attached", "Dark discoloration of vascular tissues"],
             causes: "Often caused by the fungus Lasiodiplodia theobromae, exacerbated by stress, drought, or poor nutrition.",
@@ -1562,7 +1562,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Gall Midge": {
             name: "Gall Midge",
             severity: "Medium",
-            img: "https://images.unsplash.com/photo-1590682855140-52319ed48773?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60", // Placeholder
+            img: "images/gall_midge.jpg",
             shortDesc: "Insect pest that causes the formation of wart-like galls on leaves, disrupting photosynthesis.",
             symptoms: ["Small, blister-like galls on the upper leaf surface", "Curled or deformed younger leaves", "Premature leaf drop in severe cases"],
             causes: "Caused by the mango leaf gall midge (Procontarinia spp.). The larvae feed inside the leaf tissue.",
@@ -1571,7 +1571,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Powdery Mildew": {
             name: "Powdery Mildew",
             severity: "High",
-            img: "https://images.unsplash.com/photo-1598282361664-9f7988ee5c02?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60", // Placeholder
+            img: "images/powdery_mildew.jpg",
             shortDesc: "A fungal infection characterized by a white, powdery growth on leaves and panicles.",
             symptoms: ["White powdery fungal growth on leaves, stems, and flowers", "Curling and distortion of young leaves", "Failure of fruit set"],
             causes: "Caused by Oidium mangiferae. Favored by cool, dry weather with high morning humidity.",
@@ -1580,7 +1580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Healthy": {
             name: "Healthy",
             severity: "None",
-            img: "https://images.unsplash.com/photo-1536294248408-013093c4a04d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60", // Placeholder
+            img: "images/healthy.jpg",
             shortDesc: "Plant foliage appears normal with no visible signs of pathogenic or entomological stress.",
             symptoms: ["Normal green coloration", "No obvious disease lesions", "Normal leaf structure and turgor"],
             causes: "Optimal environmental conditions, good nutrition, and successful disease management.",
