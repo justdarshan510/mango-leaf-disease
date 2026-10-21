@@ -936,8 +936,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.error || 'Diagnostic inference failed');
             }
         } catch (error) {
-            console.error('Backend /predict failed:', error);
-            alert(`Backend Prediction Service Warning:\n${error.message}\n\nPlease ensure 'app.py' is running with python in 'venv311' on port 5005. Executing fallback diagnostic.`);
+            console.warn('Backend /predict unavailable or errored:', error);
             executeClientSideDiagnostic(plotId, treeCount, canopyStage, temp, humidity, wind, rainProb);
         }
     });

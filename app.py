@@ -622,9 +622,6 @@ def compute_epidemiology_and_dosage(top_prediction, severity_grade, user_temp=No
 
 @app.route('/')
 @app.route('/index.html')
-@app.route('/api')
-@app.route('/api/index')
-@app.route('/api/index.py')
 def index():
     for d in [STATIC_DIR, os.path.join(BASE_DIR, 'public'), 'public', 'static']:
         if os.path.exists(os.path.join(d, 'index.html')):
@@ -661,11 +658,17 @@ def get_live_weather():
             "rainProb": 15
         })
 
-@app.route('/predict', methods=['POST', 'OPTIONS'])
-@app.route('/api/predict', methods=['POST', 'OPTIONS'])
+@app.route('/predict', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api/predict', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api/predict.py', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api/index.py', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api/index', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api', methods=['GET', 'POST', 'OPTIONS'])
 def predict():
     if request.method == 'OPTIONS':
         return jsonify({"status": "ok"}), 200
+    if request.method == 'GET':
+        return jsonify({"status": "Diagnostic Prediction Endpoint Active", "supported_methods": ["POST"]}), 200
 
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400

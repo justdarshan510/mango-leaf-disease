@@ -3,6 +3,18 @@
   "rewrites": [
     {
       "source": "/predict",
+      "destination": "/api/predict.py"
+    },
+    {
+      "source": "/api/predict",
+      "destination": "/api/predict.py"
+    },
+    {
+      "source": "/api/weather",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/weather",
       "destination": "/api/index.py"
     },
     {
