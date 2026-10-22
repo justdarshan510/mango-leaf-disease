@@ -19,10 +19,16 @@ debug_uploads/
 # Dataset & raw images (keep repo lightweight, download via preprocess script)
 dataset/
 dataset_cropped/
+cashew_dataset/
+cashew_data/
+cashew_predictions/
+runs/
 
 # Redundant large model checkpoints (>90MB)
 mango_correct_classes_model.keras
 mango_efficientnet_model (1).keras
+cashew_models/
+*.pt
 
 # OS generated files
 .DS_Store

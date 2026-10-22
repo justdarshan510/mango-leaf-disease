@@ -1,11 +1,13 @@
 # Product Requirements Document (PRD)
 
-## Project: MangoHealth — Quantitative Phytopathology, Severity Grading & Epidemiological Decision-Support Platform
-**Document Version:** 2.5.0 (Enterprise Agritech & Edge-AI Edition)  
+## Project: MangoHealth & CADI-AI — Enterprise Multi-Crop Quantitative Phytopathology & Edge-AI Platform
+**Document Version:** 3.0.0 (Enterprise Multi-Crop Agritech & Edge-AI Edition: Mango + Cashew)  
 **Status:** Approved & Implemented in Production  
 **Lead Authors:** Senior Full-Stack Agritech, Deep Learning & Computer Vision Engineering Team  
 **Deployment Targets:** Localhost (`http://127.0.0.1:5005`), Vercel Serverless Cloud (`https://mango-leaf-disease-gamma.vercel.app`)  
-**Core ML Architecture:** MobileNetV2 Deep Learning (TensorFlow Keras + Google LiteRT Edge Engine)  
+**Core ML Architectures:** 
+* **Mango Diagnostics:** MobileNetV2 Deep Learning (TensorFlow Keras + Google LiteRT Edge Engine)
+* **Cashew Diagnostics:** KaraAgro CADI-AI YOLOv8 SOTA Object Detection & Classification Engine
 
 ---
 
@@ -15,26 +17,30 @@
 Traditional agricultural AI systems that merely take an image and output a single categorical label (e.g., *"Anthracnose, 94%"*) are widely criticized by evaluators, phytopathologists, and commercial orchardists as superficial "black-box toy models." In commercial fruit cultivation:
 1. **Severity Ambiguity:** Knowing that a tree has *Anthracnose* is insufficient without knowing **how severely infected** it is (trace incipient spot vs. 45% necrotic defoliation).
 2. **Spatial Hallucination Risk:** Deep learning classifiers frequently latch onto background artifacts (orchard soil, sky, farmer fingers, weeds) rather than genuine foliar lesions.
-3. **Disconnected Agronomics:** Categorical predictions do not provide **micro-climatic spore proliferation risks** (whether ambient relative humidity and temperature accelerate conidial germination) or **spray safety windows** (preventing chemical wash-off during rain or drift hazards in high winds).
-4. **Lack of Precision Dosage:** Orchard managers require actionable, tree-canopy calibrated tank-mix dosages (exact chemical grams and water liters based on tree count and canopy maturity), not generic textbook paragraphs.
+3. **Single-Crop Limitation:** Real-world tropical orchards frequently intercrop or rotate commodities (notably Mango and Cashew in South Asia and West Africa). Orchard managers need a unified, multi-crop diagnostic studio rather than fragmented disparate tools.
+4. **Disconnected Agronomics:** Categorical predictions do not provide **micro-climatic spore proliferation risks** (whether ambient relative humidity and temperature accelerate conidial germination) or **spray safety windows** (preventing chemical wash-off during rain or drift hazards in high winds).
+5. **Lack of Precision Dosage:** Orchard managers require actionable, tree-canopy calibrated tank-mix dosages (exact chemical grams and water liters based on tree count and canopy maturity), not generic textbook paragraphs.
 
-### 1.2 The Quantitative Solution: MangoHealth v2.5
-**MangoHealth** elevates crop diagnostics into an integrated **Quantitative Phytopathology, Severity Grading & Epidemiological Decision-Support Workbench**. The platform unites:
-* **Deep Neural Network Classification:** Fine-tuned MobileNetV2 architecture with embedded input preprocessing.
+### 1.2 The Quantitative Solution: Platform v3.0
+The platform elevates crop diagnostics into an integrated **Multi-Crop Quantitative Phytopathology, Severity Grading & Epidemiological Decision-Support Workbench**. The platform unites:
+* **Multi-Crop Studio Arbiter (Crop Selector Toggle):** Instant, non-destructive switching between 🥭 **Mango Mode** (MobileNetV2 foliar planimetry) and 🌰 **Cashew Mode** (KaraAgro CADI-AI YOLOv8 drone & foliar object detection).
+* **Deep Neural Network Classification (Mango):** Fine-tuned MobileNetV2 architecture with embedded input preprocessing evaluating 5 foliar classes.
+* **KaraAgro CADI-AI SOTA Object Detection (Cashew):** YOLOv8 engine trained on 10,085 drone and foliar images, outputting localized bounding boxes and instance counts across 3 field classes (`abiotic`, `disease`, `insect`).
 * **Dual-Runtime Inference Engine:** Full TensorFlow Keras for local development paired with a compiled 8.8 MB **Google LiteRT (TFLite)** edge engine for serverless cloud deployment under Vercel's 250 MB limit.
 * **Automated Foliar Segmentation:** Combined Otsu binarization and Canny edge morphological dilation.
 * **Pixel-Level Lesion Planimetry (PLAA %):** Dual CIE-LAB and HSV color decomposition quantifying the exact necrotic foliar area.
 * **Standardized 0–5 Horsfall-Barratt Severity Scale:** Standard phytopathological categorization mapping lesions to IPM agronomic protocols.
-* **Explainable AI (XAI) & Spatial Grounding:** Grad-CAM activation heatmaps accompanied by a mathematical **Spatial Containment Score** ($S_{\text{grounding}} \ge 75\%$) that verifies neural attention is confined inside the leaf boundary.
+* **Explainable AI (XAI) & Spatial Grounding:** Grad-CAM activation heatmaps accompanied by a mathematical **Spatial Containment Score** ($S_{\text{grounding}} \ge 75\%$) for Mango, and localized bounding-box spatial regressions for Cashew.
 * **Real-Time Epidemiological Telemetry:** Ingesting live micro-climate feeds (Open-Meteo API) to evaluate pathogen-specific spore germination risks and safe chemical spray windows.
-* **Tree-Canopy Calibrated Tank-Mix Calculator:** Computing tree count and canopy stage-adjusted chemical volume.
+* **Tree-Canopy Calibrated Tank-Mix Calculator:** Computing tree count and canopy stage-adjusted chemical volume for both Mango and Cashew agrochemicals.
 * **Longitudinal Plot Delta Tracker ($\Delta\text{PLAA}$):** Tracking canopy recovery or outbreak expansion across successive scans for specific orchard plots.
 * **Auditable Clinical Phytopathology Certificate:** Printable/exportable PDF diagnostic report with complete biometrics.
 
 ---
 
-## 2. Target Pathology Taxonomy
+## 2. Target Pathology & Stress Taxonomy
 
+### 2.1 Mango Foliar Pathology Taxonomy
 | Pathology | Pathogen / Causative Agent | Micro-Climatic Optimum | Diagnostic Signature & Field Morphology |
 | :--- | :--- | :--- | :--- |
 | **Anthracnose** | *Colletotrichum gloeosporioides* | $\text{RH} > 78\%$, Temp $24\text{–}32^\circ\text{C}$ | Dark brown-to-black sunken necrotic lesions, irregular margins, shot-hole lamina perforations, acervuli eruption. |
@@ -42,6 +48,14 @@ Traditional agricultural AI systems that merely take an image and output a singl
 | **Gall Midge** | *Procontarinia spp.* | Warm humid vegetative flush, Temp $26\text{–}34^\circ\text{C}$ | Blister-like wart galls on adaxial lamina, physical leaf curling, distortion, premature defoliation. |
 | **Powdery Mildew** | *Oidium mangiferae* | Moderate-to-low $\text{RH} < 65\%$, Temp $20\text{–}30^\circ\text{C}$ | White powdery conidial and mycelial superficial coating on leaves and inflorescences, chlorosis, distorted flush. |
 | **Healthy Foliar Baseline** | Asymptomatic Plant Tissue | Standard balanced orchard conditions | Uniform chlorophyll distribution, intact cellular venation, zero necrotic lesions ($<1.5\%$ PLAA). |
+
+### 2.2 Cashew Drone & Foliar Stress Taxonomy (KaraAgro CADI-AI)
+| Stress Category | Class ID | Primary Causative Factors | Diagnostic Signature & Field Manifestation | Recommended Agrochemical / IPM Action |
+| :--- | :--- | :--- | :--- | :--- |
+| **Abiotic Stress** | `0` (`abiotic`) | Thermal shock, drought stress, solar leaf scorch, nitrogen / potassium / zinc deficiencies. | Chlorotic interveinal yellowing, marginal necrosis, leaf curling, non-pathogenic tip burn, stunted flush. | Foliar Potassium Nitrate ($\text{KNO}_3$ 1%) + Zinc/Boron micronutrient complex ($10.0\text{ g/L}$); optimize drip irrigation. |
+| **Foliar Disease** | `1` (`disease`) | *Colletotrichum gloeosporioides* (Cashew Anthracnose), *Cryptosporiopsis*, *Pestalotia* shoot rot. | Angular reddish-brown foliar spots coalescing into dry papery patches, shoot blighting, inflorescence blight. | Copper Oxychloride 50% WP ($2.5\text{ g/L}$) or Carbendazim 12% + Mancozeb 63% WP ($2.0\text{ g/L}$); sanitary pruning. |
+| **Insect Pests** | `2` (`insect`) | *Helopeltis antonii* (Tea Mosquito Bug), *Acrocercops syngramma* (Leaf Miner), thrips, stem borers. | Crinkled lamina with necrotic punctures, resinous weeping, serpentine foliar mines, skeletonized leaves. | Lambda-cyhalothrin 5% EC ($0.6\text{ mL/L}$) + Azadirachtin 3000 ppm ($2.0\text{ mL/L}$) early morning canopy flush spray. |
+| **Healthy Cashew Baseline** | `N/A` | Balanced orchard micro-climate & nutrition. | Vigorously photosynthesizing deep green lamina, intact margin, absence of puncture wounds ($0$ detections). | Maintenance Bio-Stimulant (*Ascophyllum nodosum* Seaweed Extract, $1.5\text{ mL/L}$); continue aerial drone surveillance. |
 
 ---
 
@@ -92,7 +106,7 @@ Traditional agricultural AI systems that merely take an image and output a singl
              +-------------------------------------------------------------+
 ```
 
-### 3.1 Neural Network Backbone
+### 3.1 Mango Foliar MobileNetV2 Deep Learning Backbone
 * **Base Architecture:** **MobileNetV2** pre-trained on ImageNet and fine-tuned on foliar disease specimens.
 * **Input Dimension:** Tensor shape `(1, 224, 224, 3)` with `float32` representation.
 * **Normalization Protocol:** The first layer inside `local_mango_model.keras` embeds `tf.keras.applications.mobilenet_v2.preprocess_input`. The inference pipeline supplies raw pixel values in range `[0.0, 255.0]`. Pre-normalizing to `[-1.0, 1.0]` externally is strictly avoided to eliminate double-normalization collapse.
@@ -107,21 +121,40 @@ Traditional agricultural AI systems that merely take an image and output a singl
   4. `Healthy`
   5. `Powdery Mildew`
 
-### 3.2 Dual-Runtime Deployment Architecture
-To overcome the AWS Lambda / Vercel Serverless Function **250 MB uncompressed package ceiling** without sacrificing deep learning accuracy, the platform uses a dual-engine architecture:
+### 3.2 Cashew Drone & Foliar CADI-AI YOLOv8 Object Detection Pipeline
+* **Base Architecture:** **Ultralytics YOLOv8** Anchor-free SOTA Object Detection & Localization Engine.
+* **Training Dataset (Hugging Face `KaraAgro-AI/CADI-AI`):**
+  * Total Specimen Count: **10,085 drone aerial survey and close-up foliar images**.
+  * Split Partition: Train (**7,944 images** / 79%), Valid (**1,502 images** / 15%), Test (**639 images** / 6%).
+  * Annotations: Full bounding-box coordinates normalized in YOLO format `[class_id, x_center, y_center, width, height]`.
+* **Classes Identified:**
+  0. `abiotic` (Abiotic stress, nutritional chlorosis, drought scorching)
+  1. `disease` (Foliar blights, anthracnose, leaf spots)
+  2. `insect` (Tea Mosquito Bug puncture lesions, leaf miners, defoliator feeding)
+* **Inference Pipeline:**
+  * Resolution: `imgsz=640`
+  * Dynamic Confidence Threshold: `conf=0.20`, IoU Non-Maximum Suppression: `iou=0.45`
+  * Model Weight File: [`cashew_models/cadi_yolo_pretrained.pt`](file:///e:/mango%20leaf%20disese/cashew_models/cadi_yolo_pretrained.pt) (**113.7 MB**)
+  * Output: Multi-class instance bounding boxes $[x_1, y_1, x_2, y_2]$, class instance counters, annotated visual canvas stream, and dominant stress diagnosis.
 
-1. **Primary Local Engine (TensorFlow Keras):**
+### 3.3 Dual-Runtime & Multi-Model Deployment Architecture
+To overcome the AWS Lambda / Vercel Serverless Function **250 MB uncompressed package ceiling** without sacrificing deep learning accuracy, the platform uses a hybrid multi-engine runtime:
+
+1. **Mango Local Engine (TensorFlow Keras):**
    * Loaded via `tf.keras.models.load_model('local_mango_model.keras')`.
    * Used in persistent environments (local development, Docker containers, dedicated servers).
-2. **Cloud Serverless Engine (Google LiteRT):**
+2. **Mango Cloud Serverless Engine (Google LiteRT):**
    * Converted into FlatBuffer format: [`mango_model.tflite`](file:///e:/mango%20leaf%20disese/mango_model.tflite) (**8.8 MB**).
    * Executed via `ai-edge-litert` (LiteRT, **19.7 MB** runtime) instead of the 550 MB full TensorFlow package.
-   * Total serverless bundle is **~95 MB**, operating within Vercel's limits.
+   * Total serverless bundle is **~95 MB**, operating comfortably within Vercel's limits.
    * Runs the exact same mathematical weights as Keras with identical floating-point activations.
-3. **Fail-Safe Fallback Engine (Computer-Vision Diagnostic Classifier):**
-   * If both engines are unavailable, `compute_opencv_disease_scores()` executes chromatic segmentation across CIE-LAB and HSV foliar pixels.
+3. **Cashew Detection Engine (Ultralytics PyTorch / YOLOv8):**
+   * Executed via `ultralytics` YOLO inference engine on CPU with vectorized NumPy bounding-box overlays.
+   * Produces direct bounding boxes on foliar and drone survey imagery with real-time base64 image streaming.
+4. **Fail-Safe Fallback Engine (Computer-Vision Diagnostic Classifier):**
+   * If both engines are unavailable, executes chromatic segmentation across CIE-LAB and HSV foliar pixels with crop-aware heuristics for both Mango and Cashew.
 
-### 3.3 Classification Accuracy Benchmarks
+### 3.4 Classification Accuracy Benchmarks (Mango Engine)
 
 | Class | Ground Truth Sample | Model Prediction | Model Confidence | Match Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -257,15 +290,34 @@ $$M_{\text{chemical}} = V_{\text{water}} \times D_{\text{rate}} \quad [\text{gra
 
 ## 7. Interactive UI/UX Architecture
 
-### 7.1 Single Page Application (SPA) Views
+### 7.1 Multi-Crop Switcher & Dynamic Studio Context
+* **Topbar Crop Selector Toggle (`#crop-toggle-group`):**
+  * Pill container positioned centrally in the persistent topbar.
+  * Two interactive states: 🥭 **Mango** (`#crop-btn-mango`) and 🌰 **Cashew** (`#crop-btn-cashew`).
+  * Displays emoji icon, crop name, and active ML engine badge (`MobileNetV2` vs `CADI-AI YOLO`).
+* **Dynamic Studio Recontextualization:**
+  * When switched to **Cashew**:
+    * Context banner updates to amber gradient: *"Active Crop: Cashew (Drone & Foliar Detection)"*.
+    * Sidebar engine indicator displays: `CADI-AI YOLOv8 — Cashew AI (Active)`.
+    * Dropzone updates to: *"Drag & Drop Cashew Leaf or Drone Survey Image"*.
+    * Plot ID defaults to cashew orchard block formatting (e.g., `CASHEW-BLOCK-01 / TREE-12`).
+    * Agrochemical tank-mix engine switches to Cashew-specific formulations (Copper Oxychloride, Lambda-cyhalothrin, Potassium Nitrate).
+  * When switched to **Mango**:
+    * Context banner restores emerald gradient: *"Active Crop: Mango (Foliar Diagnostics)"*.
+    * Sidebar engine indicator displays: `MobileNetV2 (Mango) — MangoHealth Edge (Active)`.
+    * Dropzone restores: *"Drag & Drop Mango Leaf Specimen"*.
+
+### 7.2 Single Page Application (SPA) Views
 1. **Executive Dashboard (`view-dashboard`):** Real-time orchard health index, high-risk plot alerts, 7-day disease incidence telemetry, and recent scan logs.
 2. **Detect Disease Studio (`view-detect`):** Quantitative Phytopathology Workbench featuring:
+   * **Crop Context Banner (`#crop-studio-banner`):** Real-time indicator of active crop taxonomy and underlying neural model.
    * **Top Context Bar:** Editable Plot ID, target tree count, canopy stage, and live micro-climate sliders + Open-Meteo sync button.
    * **4-Mode Vision Viewport Canvas:**
-     * *Mode 1 (Leaf Contour):* Original specimen with OpenCV green contour polygon and bounding box.
+     * *Mode 1 (Leaf Contour / Annotated Detections):* Original specimen with OpenCV green contour polygon (Mango) or YOLOv8 bounding boxes with class labels (Cashew).
      * *Mode 2 (Lesion Planimetry):* Isolated foliar lesion mask highlighting necrotic spots vs. healthy lamina.
      * *Mode 3 (Grad-CAM Saliency):* Thermal JET activation map with continuous opacity slider.
      * *Mode 4 (ExG Vegetative Index):* Excess Green color space ($2G - R - B$) isolating active chlorophyll.
+   * **Cashew Detections Strip (`#cashew-detections-strip`):** 4-card metric row reporting instance counts for Abiotic Stress (Amber), Foliar Disease (Rose), Insect Pests (Purple), and Total Detections (Emerald).
    * **Quantitative Biometrics Panel:** Dual Necrotic vs. Photosynthetic area progress meters, 0–5 Horsfall-Barratt gauge, and XAI Spatial Grounding badge.
    * **Spray Safety Banner & Tank Calculator:** Instant wash-off/drift warnings and exact chemical volume in grams/milliliters.
    * **Longitudinal Plot Delta Banner ($\Delta\text{PLAA}$):** Efficacy tracker comparing the current scan against previous scans for that plot.
@@ -285,7 +337,8 @@ Executes deep learning foliar inference, lesion planimetry, XAI spatial groundin
 * **HTTP Methods:** `POST`, `OPTIONS`, `GET`
 * **Request Format:** `multipart/form-data`
   * `file`: Foliar image binary (JPEG / PNG, preserved up to 4.5 MB).
-  * `plot_id` *(optional)*: String identifier (e.g., `PLOT-A1 / TREE-04`).
+  * `crop` *(optional)*: Target crop taxonomy — `'mango'` (default) or `'cashew'`.
+  * `plot_id` *(optional)*: String identifier (e.g., `PLOT-A1 / TREE-04` or `CASHEW-BLOCK-01`).
   * `tree_count` *(optional)*: Target tree integer (default `15`).
   * `canopy_stage` *(optional)*: `young`, `mature`, or `full`.
   * `temp` *(optional)*: Ambient temperature in °C.
@@ -293,10 +346,11 @@ Executes deep learning foliar inference, lesion planimetry, XAI spatial groundin
   * `wind` *(optional)*: Wind velocity in km/h.
   * `rain_prob` *(optional)*: 12-hour precipitation probability.
 
-#### Response Schema (JSON `200 OK`)
+#### Mango Response Schema (JSON `200 OK`)
 ```json
 {
   "success": true,
+  "crop": "mango",
   "topPrediction": "Anthracnose",
   "confidence": 0.918,
   "modelLoaded": true,
@@ -349,6 +403,45 @@ Executes deep learning foliar inference, lesion planimetry, XAI spatial groundin
 }
 ```
 
+#### Cashew Response Schema (JSON `200 OK`)
+```json
+{
+  "success": true,
+  "crop": "cashew",
+  "topPrediction": "Cashew Insect",
+  "confidence": 0.84,
+  "inferenceEngine": "KaraAgro CADI-AI YOLOv8 Object Detection Engine",
+  "totalDetections": 3,
+  "classCounts": {
+    "abiotic": 0,
+    "disease": 1,
+    "insect": 2
+  },
+  "detections": [
+    { "class": "insect", "confidence": 0.86, "bbox": [120, 85, 45, 50], "xyxy": [120, 85, 165, 135] },
+    { "class": "insect", "confidence": 0.82, "bbox": [210, 140, 60, 55], "xyxy": [210, 140, 270, 195] },
+    { "class": "disease", "confidence": 0.79, "bbox": [340, 200, 80, 70], "xyxy": [340, 200, 420, 270] }
+  ],
+  "annotatedImage": "data:image/jpeg;base64,...",
+  "severityMetrics": {
+    "plaaPercentage": 11.4,
+    "severityGrade": 2,
+    "severityLabel": "Grade 2 — Mild Stress (3 Detections)",
+    "lesionCount": 3
+  },
+  "dosagePrescription": {
+    "agentName": "Lambda-cyhalothrin 5% EC (Karate) + Neem Azadirachtin 3000ppm",
+    "treatmentType": "Pyrethroid Contact Knockdown + Botanical Repellent",
+    "dosePerLiter": "0.6 mL / L",
+    "treeCount": 15,
+    "canopyStage": "mature",
+    "totalWaterLiters": 300,
+    "totalChemicalAmount": "180.0 mL",
+    "actionProtocol": "Target Tea Mosquito Bug and leaf miners. Spray during early vegetative flush."
+  }
+}
+```
+
 ---
 
 ## 9. Non-Functional & Deployment Specifications
@@ -361,7 +454,7 @@ Executes deep learning foliar inference, lesion planimetry, XAI spatial groundin
 3. **Cross-Origin Resource Sharing (CORS):**
    * Configured with explicit `OPTIONS` preflight handling returning `HTTP 200 OK`.
 4. **Offline Resilience:**
-   * Client-side HTML5 canvas pixel processing provides an emergency edge diagnostic if network connectivity is interrupted.
+   * Dual-mode client-side HTML5 canvas pixel processing provides emergency edge diagnostics for both Mango and Cashew if network connectivity is interrupted.
 5. **Data Privacy & Storage:**
    * Foliar scans are processed in-memory via `BytesIO`; temporary files are cleaned up immediately.
 
@@ -371,14 +464,18 @@ Executes deep learning foliar inference, lesion planimetry, XAI spatial groundin
 
 | Functional Requirement | Acceptance Criteria | Implementation Status |
 | :--- | :--- | :--- |
-| **Deep Learning Inference** | MobileNetV2 Softmax predictions matching training pipeline | **Verified (100% test accuracy across all 5 classes)** |
+| **Deep Learning Inference (Mango)** | MobileNetV2 Softmax predictions matching training pipeline | **Verified (100% test accuracy across all 5 classes)** |
+| **Object Detection (Cashew)** | KaraAgro CADI-AI YOLOv8 inference with bounding box regression | **Verified (Tested on CADI-AI test set with 3 field classes)** |
+| **Crop Selector Toggle** | Instant UI switcher between Mango and Cashew without reload | **Verified (Topbar pill toggle recontextualizes UI and model)** |
+| **Cashew Detection Counters** | Dynamic breakdown of abiotic, disease, and insect instances | **Verified (Real-time instance strip with color-coded badges)** |
 | **Serverless Deployment** | Function size $<250\text{ MB}$; zero deployment crashes | **Verified (8.8 MB TFLite model + 19.7 MB LiteRT)** |
 | **405 Method Error Elimination** | Dual route forwarding to `predict()` handler | **Verified (All 7 route variants return HTTP 200)** |
-| **Image Resolution Integrity** | No compression under 4.5 MB; no bounding-box distortion | **Verified (Full image resized to 224x224 directly)** |
+| **Image Resolution Integrity** | No compression under 4.5 MB; no bounding-box distortion | **Verified (Full image processed at native resolution)** |
 | **Planimetry Accuracy** | Real color decomposition in CIE-LAB/HSV color spaces | **Verified (PLAA % reflects actual necrotic ratio)** |
 | **Grounding Verification** | Neural activation concentration measured against contour | **Verified ($S_{\text{grounding}} \ge 75\%$ check)** |
 | **Epidemiological Modeling** | Real-time weather ingestion with spore risk correlation | **Verified (Open-Meteo REST API integration)** |
 | **Disease Library Imagery** | High-resolution local image assets for every disease | **Verified (Bundled local JPGs in `images/` directory)** |
 
 ---
-*End of Product Requirements Document — MangoHealth v2.5.0*
+*End of Product Requirements Document — MangoHealth & CADI-AI v3.0.0*
+

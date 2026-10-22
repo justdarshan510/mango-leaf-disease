@@ -64,8 +64,8 @@
                 <div class="system-status">
                     <div class="status-dot"></div>
                     <div class="status-info">
-                        <span class="status-model">EfficientNet-B0</span>
-                        <span class="status-version">v1.0 (Active)</span>
+                        <span class="status-model" id="sidebar-model-name">MobileNetV2 (Mango)</span>
+                        <span class="status-version" id="sidebar-model-version">MangoHealth Edge (Active)</span>
                     </div>
                 </div>
             </div>
@@ -82,6 +82,24 @@
                     </button>
                     <h1 class="page-title" id="page-title">Dashboard</h1>
                 </div>
+
+                <!-- Crop Selector Toggle -->
+                <div class="crop-selector-container">
+                    <span class="crop-selector-label"><i class="ph-bold ph-plant"></i> Target Crop:</span>
+                    <div class="crop-toggle-group" id="crop-toggle-group">
+                        <button type="button" class="crop-btn active" data-crop="mango" id="crop-btn-mango" title="Switch to Mango Foliar Diagnostics (MobileNetV2)">
+                            <span class="crop-emoji">🥭</span>
+                            <span class="crop-text">Mango</span>
+                            <span class="crop-badge">MobileNetV2</span>
+                        </button>
+                        <button type="button" class="crop-btn" data-crop="cashew" id="crop-btn-cashew" title="Switch to Cashew Drone & Leaf Diagnostics (CADI-AI YOLO)">
+                            <span class="crop-emoji">🌰</span>
+                            <span class="crop-text">Cashew</span>
+                            <span class="crop-badge">CADI-AI YOLO</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="topbar-right">
                     <span class="current-date" id="current-date">--</span>
                     <button class="icon-btn"><i class="ph ph-bell"></i></button>
@@ -220,6 +238,20 @@
                         <div>
                             <h2>Quantitative Phytopathology & Decision-Support Workbench</h2>
                             <p class="subtitle">Multi-spectral leaf lamina planimetry, 0–5 Horsfall-Barratt severity biometrics, XAI spatial grounding & precision agrochemical calculator.</p>
+                        </div>
+                    </div>
+
+                    <!-- Crop Context Banner -->
+                    <div class="crop-studio-banner mb-20" id="crop-studio-banner">
+                        <div class="csb-left">
+                            <span class="csb-icon" id="csb-crop-icon">🥭</span>
+                            <div class="csb-text">
+                                <h3 id="csb-crop-title">Active Crop: Mango (Foliar Diagnostics)</h3>
+                                <p id="csb-crop-desc">MobileNetV2 edge engine evaluating 5 foliar classes (Anthracnose, Die Black, Gall Midge, Healthy, Powdery Mildew).</p>
+                            </div>
+                        </div>
+                        <div class="csb-right">
+                            <span class="badge badge-success font-12" id="csb-model-badge"><i class="ph-bold ph-cpu"></i> MobileNetV2 + LiteRT</span>
                         </div>
                     </div>
 
@@ -428,6 +460,26 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Cashew Detection Instance Breakdown (Active for Cashew) -->
+                                <div class="cashew-detections-strip hidden" id="cashew-detections-strip">
+                                    <div class="cds-item abiotic">
+                                        <span class="cds-label">Abiotic Stress</span>
+                                        <strong class="cds-count" id="count-abiotic">0</strong>
+                                    </div>
+                                    <div class="cds-item disease">
+                                        <span class="cds-label">Foliar Disease</span>
+                                        <strong class="cds-count" id="count-disease">0</strong>
+                                    </div>
+                                    <div class="cds-item insect">
+                                        <span class="cds-label">Insect Pests</span>
+                                        <strong class="cds-count" id="count-insect">0</strong>
+                                    </div>
+                                    <div class="cds-item total">
+                                        <span class="cds-label">Total Detections</span>
+                                        <strong class="cds-count" id="count-total">0</strong>
+                                    </div>
+                                </div>
+
                                 <!-- Main Diagnostic Pathology Card -->
                                 <div class="prediction-main-card" id="prediction-main-card">
                                     <div class="pred-top-row">

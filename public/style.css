@@ -1585,3 +1585,214 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; color: var(--text-main); letter-spaci
     .dosage-hero { flex-direction: column; align-items: flex-start; gap: 12px; }
     .dh-concentration { text-align: left; }
 }
+
+/* ==========================================================================
+   CROP SELECTOR TOGGLE (MANGO vs CASHEW MULTI-CROP ENGINE)
+   ========================================================================== */
+.crop-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color, #E2E8F0);
+    padding: 4px 6px 4px 14px;
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.crop-selector-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary, #64748B);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.crop-toggle-group {
+    display: flex;
+    align-items: center;
+    background: #F1F5F9;
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 4px;
+}
+
+.crop-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.crop-btn:hover {
+    color: #1E293B;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.crop-btn.active {
+    background: #FFFFFF;
+    color: #0F172A;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.crop-btn.active[data-crop="mango"] {
+    color: #047857;
+    border-bottom: 2px solid #10B981;
+}
+
+.crop-btn.active[data-crop="cashew"] {
+    color: #D97706;
+    border-bottom: 2px solid #F59E0B;
+}
+
+.crop-btn .crop-emoji {
+    font-size: 15px;
+}
+
+.crop-btn .crop-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #E2E8F0;
+    color: #475569;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.crop-btn.active[data-crop="mango"] .crop-badge {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.crop-btn.active[data-crop="cashew"] .crop-badge {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+/* Cashew Detections Strip */
+.cashew-detections-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.cds-item {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cds-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.cds-item.abiotic::before { background: #F59E0B; }
+.cds-item.disease::before { background: #F43F5E; }
+.cds-item.insect::before { background: #8B5CF6; }
+.cds-item.total::before { background: #10B981; }
+
+.cds-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cds-count {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.cds-item.abiotic .cds-count { color: #D97706; }
+.cds-item.disease .cds-count { color: #E11D48; }
+.cds-item.insect .cds-count { color: #7C3AED; }
+.cds-item.total .cds-count { color: #047857; }
+
+.crop-studio-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, rgba(240, 253, 244, 0.9) 0%, rgba(254, 243, 199, 0.4) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 14px;
+    transition: all 0.3s ease;
+}
+
+.crop-studio-banner.cashew-active {
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.9) 0%, rgba(254, 215, 170, 0.5) 100%);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.csb-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.csb-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.csb-text h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 2px;
+}
+
+.csb-text p {
+    font-size: 12px;
+    color: #64748B;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .crop-selector-container {
+        padding: 2px 4px 2px 8px;
+    }
+    .crop-selector-label {
+        display: none;
+    }
+    .crop-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+        gap: 6px;
+    }
+    .crop-btn .crop-badge {
+        display: none;
+    }
+    .cashew-detections-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
