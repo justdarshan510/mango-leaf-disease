@@ -1122,25 +1122,25 @@ document.addEventListener('DOMContentLoaded', () => {
             let protocol = "Cashew canopy appears healthy with low pest/disease pressure. Maintain bi-weekly aerial drone surveillance.";
             let totalDetections = 0;
 
-            if (chloroticPct >= 0.08 || (greenPct < 0.70 && necroticPct < 0.08)) {
-                cTopPred = "Cashew Abiotic Stress";
-                counts.abiotic = Math.max(1, Math.round(chloroticPct * 15));
-                totalDetections = counts.abiotic;
-                agentName = "Potassium Nitrate (KNO3 1%) + Zinc/Boron Foliar Micronutrient";
-                treatType = "Nutritional & Thermal Stress Alleviation Complex";
-                doseL = "10.0 g / L";
-                protocol = "Alleviates foliar heat/drought stress and zinc deficiency. Ensure consistent drip irrigation; spray in evening.";
-            } else if (necroticPct >= 0.08 || charcoalPct >= 0.01) {
+            if (necroticPct >= 0.02 || charcoalPct >= 0.005) {
                 cTopPred = "Cashew Foliar Disease";
-                counts.disease = Math.max(1, Math.round(necroticPct * 20));
+                counts.disease = Math.max(1, Math.round(necroticPct * 25));
                 totalDetections = counts.disease;
                 agentName = "Copper Oxychloride 50% WP (Blitox) or Carbendazim 12% + Mancozeb 63% WP";
                 treatType = "Broad-Spectrum Contact & Systemic Fungicide";
                 doseL = "2.5 g / L";
                 protocol = "Controls Cashew Anthracnose (Colletotrichum) & twig dieback. Prune infected shoots and spray canopy thoroughly.";
-            } else if (palePct >= 0.12) {
+            } else if (chloroticPct >= 0.03 || (greenPct < 0.75 && necroticPct >= 0.01)) {
+                cTopPred = "Cashew Abiotic Stress";
+                counts.abiotic = Math.max(1, Math.round(chloroticPct * 20));
+                totalDetections = counts.abiotic;
+                agentName = "Potassium Nitrate (KNO3 1%) + Zinc/Boron Foliar Micronutrient";
+                treatType = "Nutritional & Thermal Stress Alleviation Complex";
+                doseL = "10.0 g / L";
+                protocol = "Alleviates foliar heat/drought stress and zinc deficiency. Ensure consistent drip irrigation; spray in evening.";
+            } else if (palePct >= 0.03 || (greenPct < 0.85 && (necroticPct + chloroticPct) >= 0.02)) {
                 cTopPred = "Cashew Insect Pest Attack";
-                counts.insect = Math.max(1, Math.round(palePct * 18));
+                counts.insect = Math.max(1, Math.round(palePct * 22));
                 totalDetections = counts.insect;
                 agentName = "Lambda-cyhalothrin 5% EC (Karate) + Neem Azadirachtin 3000ppm";
                 treatType = "Pyrethroid Contact Knockdown + Botanical Repellent";
